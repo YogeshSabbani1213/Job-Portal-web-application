@@ -1,0 +1,13 @@
+import express from 'express';
+import { ApplyJob, getjobApplications, getMyApplications, updateApplicationStatus } from '../controllers/applicationController.js';
+import {verifyToken} from '../middleware/authmiddleware.js'
+import upload from '../../utils/multer.js';
+import { authorizeroles } from '../middleware/roleMiddleware.js';
+const router = express.Router();
+
+router.post('/applyjob',verifyToken,upload.single('resumeURL'),authorizeroles("job seeker"),ApplyJob);
+router.get('/job/:jobId',verifyToken,getjobApplications);
+router.get('/getmyapplications',verifyToken,getMyApplications);
+router.put('/status/:applicationId',verifyToken,updateApplicationStatus);
+
+export default router;

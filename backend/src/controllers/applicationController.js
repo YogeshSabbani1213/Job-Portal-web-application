@@ -1,0 +1,77 @@
+import applicationModel from "../models/ApplicationModel.js";
+import jobModel from "../models/JobModel.js";
+import NotificationModel from "../models/NotificationModel.js";
+
+export async function ApplyJob(req, res) {
+    try {
+        const { jobId } = req.body;
+        const existingApplication = await applicationModel.findOne({
+            job: jobId,
+            applicant: req.user._id,
+        })
+        if (existingApplication) {
+            return res.status(400).json({ message: 'Already applied for the Job' })
+        }
+        const appliedJob = await applicationModel.create({
+            job: jobId,
+            applicant: req.user._id,
+            resumeURL: req.file ? req.file.path : null
+        })
+        await appliedJob.populate("applicant","fullname email")
+        const job = await jobModel.findById(jobId);
+        console.log('job:', job);
+        await NotificationModel.create({
+            user: job.createdBy,//recruiter -- When USER applies → notify RECRUITER
+            message: `${req.user.fullname} applied for the ${job.jobtitle}`
+        })
+
+        return res.status(200).json({ message: 'Applied Successfully', appliedJob })
+    }
+    catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+}
+
+// Get all applications for a job (Recruiter)
+export async function getjobApplications(req, res) {
+    try {
+        const { jobId } = req.params;
+        const appliedPeople = await applicationModel.find({ job: jobId }).populate("applicant", "fullname email skills");
+        return res.status(200).json({ message: "The list of candidates", appliedPeople })
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+//Get jobs applied by a user
+export async function getMyApplications(req, res) {
+    try {
+        const applications = await applicationModel.find({ applicant: req.user._id }).populate("job", "jobtitle companyname location")
+        return res.status(200).json(applications);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+//Update application status (Recruiter)
+export async function updateApplicationStatus(req, res) {
+    try {
+        const { status } = req.body;
+        const { applicationId } = req.params;
+        const application = await applicationModel.findByIdAndUpdate(applicationId, { status }, { new: true });
+        if (!application) {
+            return res.status(404).json({ message: "Application not found" });
+        }
+        await NotificationModel.create({
+            user: application.applicant, //user -- When RECRUITER updates → notify USER
+            message: `your application status ${status}`
+        })
+            
+        return res.status(200).json({ message: 'application stauts updated', application });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
