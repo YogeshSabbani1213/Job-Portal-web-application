@@ -24,7 +24,7 @@ router.get('/job/:jobId', verifyToken,authorizeroles('recruiter'), getjobApplica
 
 router.get('/getmyapplications', verifyToken, getMyApplications);
 
-router.put('/status/:applicationId', verifyToken, updateApplicationStatus);
+router.put('/status/:applicationId', verifyToken, authorizeroles('recruiter'),updateApplicationStatus);
 
 
 

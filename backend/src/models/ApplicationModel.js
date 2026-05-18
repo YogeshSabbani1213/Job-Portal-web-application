@@ -11,7 +11,7 @@ const applicationSchema = new mongoose.Schema({
     resumeURL: { type: String },
     status: {
         type: String,
-        enum:['pending','accepted','rejected'],
+        enum:['pending','shortlisted','rejected','hired'],
         default: "pending",
     }
 },

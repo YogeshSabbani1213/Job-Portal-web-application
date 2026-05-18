@@ -93,23 +93,58 @@ export async function getMyApplications(req, res) {
 }
 
 //Update application status (Recruiter)
-export async function updateApplicationStatus(req, res) {
+export const updateApplicationStatus = async (req, res) => {
   try {
+    const recruiterId = req.user.id;
+    const applicationId = req.params.applicationId;
     const { status } = req.body;
-    const { applicationId } = req.params;
-    const application = await applicationModel.findByIdAndUpdate(applicationId, { status }, { new: true });
-    if (!application) {
-      return res.status(404).json({ message: "Application not found" });
-    }
-    await NotificationModel.create({
-      user: application.applicant, //user -- When RECRUITER updates → notify USER
-      message: `your application status ${status}`
-    })
+    const allowedStatuses = ['pending', 'shortlisted', 'rejected', 'hired'];
 
-    return res.status(200).json({ message: 'application stauts updated', application });
-  }
-  catch (error) {
-    res.status(500).json({ error: error.message });
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid status'
+      });
+    }
+
+    const application = await applicationModel
+      .findById(applicationId)
+      .populate('job');
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found'
+      });
+    }
+    if (!application.job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Related job not found'
+      });
+    }
+
+    if (application.job.createdBy.toString() !== recruiterId) {
+      return res.status(403).json({
+        success: false,
+        message: 'You can only update applications for your own jobs'
+      });
+    }
+
+    application.status = status;
+    await application.save();
+    return res.status(200).json({
+      success: true,
+      message: 'Application status updated successfully',
+      application
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
   }
 }
 
