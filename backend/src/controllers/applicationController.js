@@ -1,6 +1,6 @@
 import applicationModel from "../models/ApplicationModel.js";
-import jobModel from "../models/JobModel.js";
-import NotificationModel from "../models/NotificationModel.js";
+import notificationModel from '../models/notificationModel.js';
+import jobModel from '../models/jobModel.js';
 
 export async function ApplyJob(req, res) {
   try {
@@ -19,11 +19,11 @@ export async function ApplyJob(req, res) {
     })
     await appliedJob.populate("applicant", "fullname email")
     const job = await jobModel.findById(jobId);
-    console.log('job:', job);
-    await NotificationModel.create({
-      user: job.createdBy,//recruiter -- When USER applies → notify RECRUITER
-      message: `${req.user.fullname} applied for the ${job.jobtitle}`
-    })
+
+    await notificationModel.create({
+      user: job.createdBy,
+      message: `New application received for ${job.title}`
+    });
 
     return res.status(200).json({ message: 'Applied Successfully', appliedJob })
   }
@@ -35,13 +35,10 @@ export async function ApplyJob(req, res) {
 // Get all applications for a job (Recruiter)
 export const getjobApplications = async (req, res) => {
   try {
-
     const recruiterId = req.user.id;
     const jobId = req.params.jobId;
-
     // Find the job
     const job = await jobModel.findById(jobId);
-
     // Check if job exists
     if (!job) {
       return res.status(404).json({
@@ -49,7 +46,6 @@ export const getjobApplications = async (req, res) => {
         message: 'Job not found'
       });
     }
-
     // Verify recruiter owns this job
     if (job.createdBy.toString() !== recruiterId) {
       return res.status(403).json({
@@ -133,6 +129,10 @@ export const updateApplicationStatus = async (req, res) => {
 
     application.status = status;
     await application.save();
+    await notificationModel.create({
+      user: application.applicant,
+      message: `Your application status was updated to ${status}`
+    });
     return res.status(200).json({
       success: true,
       message: 'Application status updated successfully',
