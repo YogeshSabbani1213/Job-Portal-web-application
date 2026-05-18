@@ -26,10 +26,6 @@ router.get('/getmyapplications', verifyToken, getMyApplications);
 
 router.put('/status/:applicationId', verifyToken, updateApplicationStatus);
 
-router.delete('/withdraw/:applicationId', verifyToken, authorizeroles("job seeker"), withdrawApplication);
 
-router.put('/shortlist/:applicationId', verifyToken, authorizeroles("recruiter"), shortlistCandidate);
-
-router.put('/reject/:applicationId', verifyToken, authorizeroles("recruiter"), rejectCandidate);
 
 export default router;

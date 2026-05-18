@@ -18,17 +18,22 @@ const jobSchema = new mongoose.Schema({
     },
     jobtype: {
         type: String,
-        enum:['Full time','part time','remote','contract','Internship'],
+        enum: ['Full time', 'part time', 'remote', 'contract', 'Internship'],
     },
     skillsrequired: {
         type: [String],
     },
-    experiencelevel:{
-        type:Number,
+    experiencelevel: {
+        type: Number,
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+    },
+    status: {
+        type: String,
+        enum: ["active", "closed"],
+        default: "active"
     }
 },
     {
@@ -36,5 +41,6 @@ const jobSchema = new mongoose.Schema({
     }
 )
 
-const jobModel = mongoose.model('Job',jobSchema)
-export default jobModel;
+// const jobModel = mongoose.model('Job', jobSchema)
+// export default jobModel;
+export default mongoose.models.Job || mongoose.model("Job", jobSchema);

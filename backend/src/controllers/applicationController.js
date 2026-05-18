@@ -17,7 +17,7 @@ export async function ApplyJob(req, res) {
             applicant: req.user._id,
             resumeURL: req.file ? req.file.path : null
         })
-        await appliedJob.populate("applicant","fullname email")
+        await appliedJob.populate("applicant", "fullname email")
         const job = await jobModel.findById(jobId);
         console.log('job:', job);
         await NotificationModel.create({
@@ -68,10 +68,126 @@ export async function updateApplicationStatus(req, res) {
             user: application.applicant, //user -- When RECRUITER updates → notify USER
             message: `your application status ${status}`
         })
-            
+
         return res.status(200).json({ message: 'application stauts updated', application });
     }
     catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const withdrawApplication = async (req, res) => {
+    try {
+
+        const application = await applicationModel.findById(req.params.applicationId);
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found"
+            });
+        }
+
+        if (application.applicant.toString() !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized"
+            });
+        }
+
+        await application.deleteOne();
+
+        return res.status(200).json({
+            success: true,
+            message: "Application withdrawn successfully"
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+};
+
+export const shortlistCandidate = async (req, res) => {
+  try {
+
+    const application = await applicationModel
+      .findById(req.params.applicationId)
+      .populate("job");
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found"
+      });
+    }
+
+    if (application.job.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    application.status = "shortlisted";
+
+    await application.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Candidate shortlisted"
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};
+
+export const rejectCandidate = async (req, res) => {
+  try {
+
+    const application = await applicationModel
+      .findById(req.params.applicationId)
+      .populate("job");
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found"
+      });
+    }
+
+    if (application.job.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    application.status = "rejected";
+
+    await application.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Candidate rejected"
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+};

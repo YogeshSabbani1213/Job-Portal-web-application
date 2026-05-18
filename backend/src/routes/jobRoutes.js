@@ -27,13 +27,6 @@ router.get('/myjobs', verifyToken, authorizeroles("recruiter"), getMyJobs);
 
 router.put('/updatejob/:id', verifyToken, authorizeroles("recruiter"), updateJob);
 
-router.delete('/deletejob/:id', verifyToken, authorizeroles("recruiter"), deleteOwnJob);
-
-router.patch('/closejob/:id', verifyToken, authorizeroles("recruiter"), closeJob);
-
-router.patch('/reopenjob/:id', verifyToken, authorizeroles("recruiter"), reopenJob);
-
-router.get('/dashboardstats', verifyToken, authorizeroles("recruiter"), recruiterDashboardStats);
 
 router.get('/mynotifications', verifyToken, getMyNotifications);
 

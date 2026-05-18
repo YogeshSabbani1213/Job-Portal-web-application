@@ -8,15 +8,6 @@ const router = express.Router();
 router.post('/register',upload.single("resume"),register);
 router.post('/login',login)
 
-router.post('/logout', verifyToken, logout);
 
-router.post('/forgotPassword', forgotPassword);
-router.post('/resetPassword/:token', resetPassword);
-
-router.get('/me', verifyToken, getProfile);
-
-router.put('/updateProfile', verifyToken, upload.single("resume"), updateProfile);
-
-router.put('/changePassword', verifyToken, changePassword);
 
 export default router;
