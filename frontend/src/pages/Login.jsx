@@ -3,23 +3,25 @@ import { useNavigate } from 'react-router-dom'
 
 import API from '../services/api'
 import { AuthContext } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
-export default function Login(){
+
+export default function Login() {
 
   const { login } = useContext(AuthContext)
 
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
-    email:'',
-    password:''
+    email: '',
+    password: ''
   })
 
   const handleChange = (e) => {
 
     setFormData({
       ...formData,
-      [e.target.name]:e.target.value
+      [e.target.name]: e.target.value
     })
   }
 
@@ -27,24 +29,25 @@ export default function Login(){
 
     e.preventDefault()
 
-    try{
+    try {
 
       const { data } = await API.post('/auth/login', formData)
 
       login(data.user, data.token)
 
-      alert(data.message)
+      toast.success('Login Successfully')
+
 
       navigate('/Dashboard')
 
     }
-    catch(error){
+    catch (error) {
       console.log(error)
-      alert(error.response.data.message)
+      toast.error(error.response?.data?.message || error.message)
     }
   }
 
-  return(
+  return (
 
     <div className='min-h-screen flex justify-center items-center p-4'>
 

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
+import toast from 'react-hot-toast'
+
 
 export default function Register() {
 
@@ -43,14 +45,15 @@ export default function Register() {
 
             const { data } = await API.post('/auth/register', sendData)
 
-            alert(data.message)
+            toast.success('Registered Successfully')
 
             navigate('/login')
 
         }
         catch (error) {
             console.log(error)
-            alert(error.response.data.message)
+            toast.error(error.response?.data?.message || error.message)
+
         }
     }
 

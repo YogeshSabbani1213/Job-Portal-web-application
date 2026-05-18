@@ -19,6 +19,8 @@ import CreateJob from './pages/CreateJob'
 import AppliedJobs from './pages/AppliedJobs'
 import Profile from './pages/Profile'
 import JobDetails from './pages/JobDetails'
+import { Toaster } from 'react-hot-toast'
+
 
 function Layout() {
   return (
@@ -112,7 +114,10 @@ const router = createBrowserRouter([
 ])
 
 function App() {
-  return <RouterProvider router={router} />
+  return (
+    <RouterProvider router={router} />
+    
+  )
 }
 
 export default App

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import API from '../services/api'
+import toast from 'react-hot-toast'
+
 
 export default function CreateJob(){
 
@@ -35,12 +37,13 @@ export default function CreateJob(){
 
       const { data } = await API.post('/job/createjob', sendData)
 
-      alert(data.message)
+      toast.success('Job created Successfully')
 
     }
     catch(error){
       console.log(error)
-      alert(error.response.data.message)
+      toast.error(error.response?.data?.message || error.message)
+
     }
   }
 

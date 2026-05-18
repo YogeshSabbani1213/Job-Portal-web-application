@@ -1,5 +1,7 @@
 import API from '../services/api'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+
 
 export default function JobCard({ job }) {
   const navigate = useNavigate()
@@ -12,12 +14,13 @@ export default function JobCard({ job }) {
         jobId: job._id
       })
 
-      alert(data.message)
+      toast.success('Applied for the Job')
 
     }
     catch (error) {
       console.log(error)
-      alert(error.response.data.message)
+      toast.error(error.response?.data?.message || error.message)
+
     }
   }
 

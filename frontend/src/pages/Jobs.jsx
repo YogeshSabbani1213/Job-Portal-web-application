@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import JobCard from '../components/JobCard'
 
-export default function Jobs({searchQuery,locationQuery}) {
+export default function Jobs({ searchQuery, locationQuery }) {
 
   const [jobs, setJobs] = useState([])
   const navigate = useNavigate()
@@ -14,12 +14,12 @@ export default function Jobs({searchQuery,locationQuery}) {
       try {
         let url = '/job/getJobs?limit=50'
         // Keyword search
-        if(searchQuery){
+        if (searchQuery) {
           url += `&keyword=${searchQuery}`
         }
 
         // Location filter
-        if(locationQuery){
+        if (locationQuery) {
           url += `&location=${locationQuery}`
         }
         const { data } = await API.get(url)
@@ -92,8 +92,8 @@ export default function Jobs({searchQuery,locationQuery}) {
             ))
 
           ) : (
-            <h1 className='text-2xl font-bold'>
-              No Jobs Found
+            <h1 className='text-center text-3xl mt-20'>
+              Loading...
             </h1>
           )
         }

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import { useParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
+
 
 import {
   MapPin,
@@ -32,7 +34,7 @@ export default function JobDetails() {
         setJob(foundJob)
 
       }
-      catch(error){
+      catch (error) {
 
         console.log(error)
 
@@ -54,19 +56,21 @@ export default function JobDetails() {
         }
       )
 
-      alert(data.message)
+      toast.success(data.message)
 
     }
-    catch(error){
+    catch (error) {
 
       console.log(error)
 
-      alert(error.response.data.message)
+      console.log(error.response?.data?.message || error.message)
+      toast.error(error.response?.data?.message || error.message)
+
 
     }
   }
 
-  if(!job){
+  if (!job) {
 
     return (
       <h1 className='text-center text-3xl mt-20'>
@@ -333,7 +337,7 @@ export default function JobDetails() {
               <div className='flex flex-wrap gap-3'>
 
                 {
-                  job.skillsrequired.map((skill,index)=>(
+                  job.skillsrequired.map((skill, index) => (
 
                     <span
                       key={index}
