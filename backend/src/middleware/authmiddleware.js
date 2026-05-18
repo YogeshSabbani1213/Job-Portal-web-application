@@ -25,6 +25,6 @@ export function verifyToken(req,res,next){
         })
     }
     else{
-        return res.status(400).json({ "message": "Token not found" })
+        return res.status(400).json({ "message": "Please Login" })
     }
 }
