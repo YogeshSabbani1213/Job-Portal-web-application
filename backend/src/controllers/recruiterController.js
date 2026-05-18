@@ -145,3 +145,60 @@ export const deleteRecruiterJob = async (req, res) => {
         });
     }
 };
+
+export const updateRecruiterJob=async(req,res)=>{
+    try{
+
+        const recruiterId=req.user.id;
+        const jobId=req.params.id;
+
+        const {
+            title,
+            company,
+            location,
+            salary,
+            description,
+            requirements
+        }=req.body;
+
+        const job=await jobModel.findById(jobId);
+
+        if(!job){
+            return res.status(404).json({
+                success:false,
+                message:'Job not found'
+            });
+        }
+
+        if(job.createdBy.toString()!==recruiterId){
+            return res.status(403).json({
+                success:false,
+                message:'You can only update your own jobs'
+            });
+        }
+
+        job.title=title || job.title;
+        job.company=company || job.company;
+        job.location=location || job.location;
+        job.salary=salary || job.salary;
+        job.description=description || job.description;
+        job.requirements=requirements || job.requirements;
+
+        await job.save();
+
+        res.status(200).json({
+            success:true,
+            message:'Job updated successfully',
+            job
+        });
+
+    }catch(error){
+
+        console.log(error);
+
+        res.status(500).json({
+            success:false,
+            message:'Server Error'
+        });
+    }
+}

@@ -4,6 +4,7 @@ import { authorizeroles } from '../middleware/roleMiddleware.js';
 import { getRecruiterDashboard } from '../controllers/recruiterController.js';
 import { getRecruiterJobs } from '../controllers/recruiterController.js';
 import { deleteRecruiterJob } from '../controllers/recruiterController.js';
+import { updateRecruiterJob } from '../controllers/recruiterController.js';
 
 const router = express.Router();
 
@@ -26,4 +27,5 @@ router.delete(
     authorizeroles('recruiter'),
     deleteRecruiterJob
 );
+router.put('/updatejob/:id',verifyToken,authorizeroles('recruiter'),updateRecruiterJob);
 export default router;
