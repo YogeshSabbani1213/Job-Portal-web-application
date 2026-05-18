@@ -20,7 +20,7 @@ const router = express.Router();
 
 router.post('/applyjob', verifyToken, upload.single('resumeURL'), authorizeroles("job seeker"), ApplyJob);
 
-router.get('/job/:jobId', verifyToken, getjobApplications);
+router.get('/job/:jobId', verifyToken,authorizeroles('recruiter'), getjobApplications);
 
 router.get('/getmyapplications', verifyToken, getMyApplications);
 
