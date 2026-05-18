@@ -10,6 +10,11 @@ import {
   reopenJob,
   recruiterDashboardStats
 } from '../controllers/jobController.js';
+import {
+  saveJob,
+  unsaveJob,
+  getSavedJobs
+} from '../controllers/jobController.js';
 
 import { getMyNotifications } from '../controllers/NotificationController.js';
 
@@ -22,6 +27,12 @@ const router = express.Router();
 router.post('/createjob', verifyToken, authorizeroles("recruiter"), CreateJob);
 
 router.get('/getJobs', getJobs);
+
+router.post('/savejob/:jobId',verifyToken,authorizeroles('job seeker'),saveJob);
+
+router.delete('/unsavejob/:jobId',verifyToken,authorizeroles('job seeker'),unsaveJob);
+
+router.get('/getsavedjobs',verifyToken,authorizeroles('job seeker'),getSavedJobs);
 
 router.get('/myjobs', verifyToken, authorizeroles("recruiter"), getMyJobs);
 
