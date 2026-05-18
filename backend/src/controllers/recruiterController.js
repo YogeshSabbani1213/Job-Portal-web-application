@@ -54,3 +54,94 @@ export const getRecruiterDashboard = async (req, res) => {
         });
     }
 };
+
+export const getRecruiterJobs = async (req, res) => {
+    try {
+
+        const recruiterId = req.user.id;
+
+        const jobs = await jobModel
+            .find({ createdBy: recruiterId })
+            .sort({ createdAt: -1 });
+
+        const jobsWithCounts = await Promise.all(
+
+            jobs.map(async (job) => {
+
+                const applicationsCount =
+                    await applicationModel.countDocuments({
+                        job: job._id
+                    });
+
+                return {
+                    ...job._doc,
+                    applicationsCount
+                };
+            })
+        );
+
+        res.status(200).json({
+            success: true,
+            totalJobs: jobs.length,
+            jobs: jobsWithCounts
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+export const deleteRecruiterJob = async (req, res) => {
+    try {
+
+        const recruiterId = req.user.id;
+        const jobId = req.params.id;
+
+        // Find job
+        const job = await jobModel.findById(jobId);
+
+        // Check job exists
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job not found'
+            });
+        }
+
+        // Check ownership
+        if (job.createdBy.toString() !== recruiterId) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only delete your own jobs'
+            });
+        }
+
+        // Delete related applications first (recommended)
+        await applicationModel.deleteMany({
+            job: jobId
+        });
+
+        // Delete job
+        await job.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            message: 'Job deleted successfully'
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
