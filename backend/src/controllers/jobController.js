@@ -1,7 +1,7 @@
 import jobModel from "../models/JobModel.js";
 import NotificationModel from "../models/NotificationModel.js";
 import applicationModel from "../models/ApplicationModel.js";
-import userModel from '../models/userModel.js';
+import userModel from '../models/UserModel.js';
 
 let jobCache = null;
 export async function CreateJob(req, res) {
