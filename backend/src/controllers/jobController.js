@@ -30,23 +30,57 @@ export async function CreateJob(req, res) {
   }
 }
 
-export const getMyJobs = async (req, res) => {
+export const getJobs = async (req, res) => {
   try {
-    const jobs = await jobModel.find({
-      createdBy: req.user.id
-    });
+    const {
+      search = '',
+      location = '',
+      page = 1,
+      limit = 6
+    } = req.query;
+
+    const query = {};
+
+    if (search) {
+      query.jobtitle = {
+        $regex: search,
+        $options: 'i'
+      };
+    }
+
+    if (location) {
+      query.location = {
+        $regex: location,
+        $options: 'i'
+      };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const jobs = await jobModel
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+    console.log(jobs.length);
+    const totalJobs = await jobModel.countDocuments(query);
+
     return res.status(200).json({
       success: true,
+      currentPage: Number(page),
+      totalPages:Math.ceil(totalJobs/limit) || 1,
+      totalJobs,
       jobs
     });
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Server Error'
     });
   }
-};
+}
 
 export const updateJob = async (req, res) => {
   try {
@@ -140,44 +174,44 @@ export const saveJob = async (req, res) => {
   }
 }
 
-export const unsaveJob=async(req,res)=>{
-    try{
-        const userId=req.user.id;
-        const jobId=req.params.jobId;
-        const user=await userModel.findById(userId);
-        user.savedJobs=user.savedJobs.filter(
-            job=>job.toString()!==jobId
-        )
-        await user.save();
-        res.status(200).json({
-            success:true,
-            message:'Job unsaved successfully'
-        });
-    }catch(error){
-        console.log(error);
-        res.status(500).json({
-            success:false,
-            message:'Server Error'
-        });
-    }
+export const unsaveJob = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const jobId = req.params.jobId;
+    const user = await userModel.findById(userId);
+    user.savedJobs = user.savedJobs.filter(
+      job => job.toString() !== jobId
+    )
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: 'Job unsaved successfully'
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
+  }
 }
 
-export const getSavedJobs=async(req,res)=>{
-    try{
-        const user=await userModel
-        .findById(req.user.id)
-        .populate('savedJobs');
-        res.status(200).json({
-            success:true,
-            savedJobs:user.savedJobs
-        });
-    }catch(error){
-        console.log(error);
-        res.status(500).json({
-            success:false,
-            message:'Server Error'
-        });
-    }
+export const getSavedJobs = async (req, res) => {
+  try {
+    const user = await userModel
+      .findById(req.user.id)
+      .populate('savedJobs');
+    res.status(200).json({
+      success: true,
+      savedJobs: user.savedJobs
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
+  }
 }
 
 export const closeJob = async (req, res) => {
@@ -255,54 +289,54 @@ export const reopenJob = async (req, res) => {
   }
 };
 
-export async function getJobs(req, res) {
-  try {
-    const { keyword, experiencelevel, location, jobtype, minSalary } = req.query
-    let query = {};
-    if (keyword) {
-      query.$or = [
-        { jobtitle: { $regex: keyword, $options: "i" } },
-        { description: { $regex: keyword, $options: "i" } },
-        { skillsrequired: { $in: [keyword] } }
-      ]
-    }
-    if (location) {
-      query.location = { $regex: location, $options: "i" };
-    }
-    if (experiencelevel) {
-      query.experiencelevel = { $gte: Number(experiencelevel) };
-    }
-    if (minSalary) {
-      query.salary = { $gte: Number(minSalary) }
-    }
-    if (jobtype) {
-      query.jobtype = jobtype
-    }
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 50;
-    //page 1:1-10 page2:11-20 page 3:21-30
-    const skip = (page - 1) * limit               //Skip first N records
-    const totalJobs = await jobModel.countDocuments(query)
+// export async function getJobs(req, res) {
+//   try {
+//     const { keyword, experiencelevel, location, jobtype, minSalary } = req.query
+//     let query = {};
+//     if (keyword) {
+//       query.$or = [
+//         { jobtitle: { $regex: keyword, $options: "i" } },
+//         { description: { $regex: keyword, $options: "i" } },
+//         { skillsrequired: { $in: [keyword] } }
+//       ]
+//     }
+//     if (location) {
+//       query.location = { $regex: location, $options: "i" };
+//     }
+//     if (experiencelevel) {
+//       query.experiencelevel = { $gte: Number(experiencelevel) };
+//     }
+//     if (minSalary) {
+//       query.salary = { $gte: Number(minSalary) }
+//     }
+//     if (jobtype) {
+//       query.jobtype = jobtype
+//     }
+//     const page = Number(req.query.page) || 1;
+//     const limit = Number(req.query.limit) || 50;
+//     //page 1:1-10 page2:11-20 page 3:21-30
+//     const skip = (page - 1) * limit               //Skip first N records
+//     const totalJobs = await jobModel.countDocuments(query)
 
-    const jobs = await jobModel
-      .find(query)
-      .skip(skip)         //Skip previous records
-      .limit(limit)
-      .populate("createdBy", "fullname email")
+//     const jobs = await jobModel
+//       .find(query)
+//       .skip(skip)         //Skip previous records
+//       .limit(limit)
+//       .populate("createdBy", "fullname email")
 
-    return res.status(200).json({
-      pageNumber: page,
-      limitNumber: limit,
-      TotalJobs: totalJobs,
-      count: jobs.length,
-      jobs
-    })
+//     return res.status(200).json({
+//       pageNumber: page,
+//       limitNumber: limit,
+//       TotalJobs: totalJobs,
+//       count: jobs.length,
+//       jobs
+//     })
 
-  }
-  catch (error) {
-    return res.status(500).json({ error: error.message })
-  }
-}
+//   }
+//   catch (error) {
+//     return res.status(500).json({ error: error.message })
+//   }
+// }
 export async function getAllJobs(req, res) {
   try {
     if (jobCache) {

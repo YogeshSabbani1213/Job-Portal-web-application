@@ -3,7 +3,6 @@ import express from 'express';
 import {
   CreateJob,
   getJobs,
-  getMyJobs,
   updateJob,
   deleteOwnJob,
   closeJob,
@@ -34,7 +33,7 @@ router.delete('/unsavejob/:jobId',verifyToken,authorizeroles('job seeker'),unsav
 
 router.get('/getsavedjobs',verifyToken,authorizeroles('job seeker'),getSavedJobs);
 
-router.get('/myjobs', verifyToken, authorizeroles("recruiter"), getMyJobs);
+// router.get('/myjobs', verifyToken, authorizeroles("recruiter"), getMyJobs);
 
 router.put('/updatejob/:id', verifyToken, authorizeroles("recruiter"), updateJob);
 

@@ -3,37 +3,27 @@ import applicationModel from '../models/applicationModel.js';
 
 export const getRecruiterDashboard = async (req, res) => {
     try {
-
         // Logged in recruiter id
         const recruiterId = req.user.id;
 
         // Find jobs created by recruiter
         const jobs = await jobModel.find({ createdBy: recruiterId });
-
         const jobIds = jobs.map(job => job._id);
 
         // Find applications for those jobs
-        const applications = await applicationModel.find({
-            job: { $in: jobIds }
-        });
+        const applications = await applicationModel.find({job: { $in: jobIds }});
 
         // Counts
         const totalJobs = jobs.length;
         const totalApplications = applications.length;
 
-        const pending = applications.filter(
-            app => app.status === 'pending'
-        ).length;
+        const pending = applications.filter(app => app.status === 'pending').length;
 
-        const shortlisted = applications.filter(
-            app => app.status === 'shortlisted'
-        ).length;
+        const shortlisted = applications.filter(app => app.status === 'shortlisted').length;
 
-        const rejected = applications.filter(
-            app => app.status === 'rejected'
-        ).length;
+        const rejected = applications.filter(app => app.status === 'rejected').length;
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             dashboard: {
                 totalJobs,
@@ -43,12 +33,10 @@ export const getRecruiterDashboard = async (req, res) => {
                 rejected
             }
         });
-
-    } catch (error) {
-
+    } 
+    catch (error) {
         console.log(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: 'Server Error'
         });
@@ -57,22 +45,16 @@ export const getRecruiterDashboard = async (req, res) => {
 
 export const getRecruiterJobs = async (req, res) => {
     try {
-
         const recruiterId = req.user.id;
-
         const jobs = await jobModel
             .find({ createdBy: recruiterId })
             .sort({ createdAt: -1 });
-
         const jobsWithCounts = await Promise.all(
-
             jobs.map(async (job) => {
-
                 const applicationsCount =
                     await applicationModel.countDocuments({
                         job: job._id
                     });
-
                 return {
                     ...job._doc,
                     applicationsCount
@@ -80,17 +62,15 @@ export const getRecruiterJobs = async (req, res) => {
             })
         );
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             totalJobs: jobs.length,
             jobs: jobsWithCounts
         });
 
     } catch (error) {
-
         console.log(error);
-
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: 'Server Error'
         });
