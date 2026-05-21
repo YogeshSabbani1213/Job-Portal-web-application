@@ -9,7 +9,7 @@ import { useContext } from 'react'
 import { AuthContext } from './context/AuthContext'
 
 import Navbar from './components/Navbar'
-
+import RecruiterDashboard from './pages/Recruiter/RecruiterDashboard'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -106,7 +106,15 @@ const router = createBrowserRouter([
             <CreateJob />
           </ProtectedRoute>
         )
-      }
+      },
+      {
+        path: '/recruiter/dashboard',
+        element: (
+          <ProtectedRoute>
+            <RecruiterDashboard />
+          </ProtectedRoute>
+        )
+      },
 
     ]
   }
@@ -116,7 +124,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <RouterProvider router={router} />
-    
+
   )
 }
 

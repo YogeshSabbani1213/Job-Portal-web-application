@@ -85,7 +85,11 @@ export default function Navbar() {
             user && (
 
               <Link
-                to='/dashboard'
+                to={
+                  user?.role === 'recruiter'
+                    ? '/recruiter/dashboard'
+                    : '/dashboard'
+                }
                 className='hover:text-cyan-400 transition'
               >
                 Dashboard
@@ -190,7 +194,11 @@ export default function Navbar() {
                         </div>
 
                         <Link
-                          to='/dashboard'
+                          to={
+                            user?.role === 'recruiter'
+                              ? '/recruiter/dashboard'
+                              : '/dashboard'
+                          }
                           className='flex items-center gap-3 hover:text-cyan-500 transition'
                         >
 
@@ -378,7 +386,11 @@ export default function Navbar() {
 
               <>
                 <Link
-                  to='/dashboard'
+                  to={
+                    user?.role === 'recruiter'
+                      ? '/recruiter/dashboard'
+                      : '/dashboard'
+                  }
                   onClick={() => setOpenMenu(false)}
                 >
                   Dashboard
@@ -387,6 +399,7 @@ export default function Navbar() {
                 <Link
                   to='/profile'
                   onClick={() => setOpenMenu(false)}
+                  className='flex items-center gap-3 hover:text-cyan-500 transition'
                 >
                   All Details
                 </Link>

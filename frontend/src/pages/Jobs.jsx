@@ -7,15 +7,19 @@ import JobCard from '../components/JobCard'
 export default function Jobs({ searchQuery, locationQuery }) {
 
   const [jobs, setJobs] = useState([])
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        let url = '/job/getJobs?limit=50'
+        setLoading(true)
+        let url = `/job/getJobs?page=${page}&limit=6`
         // Keyword search
         if (searchQuery) {
-          url += `&keyword=${searchQuery}`
+          url += `&search=${searchQuery}`
         }
 
         // Location filter
@@ -24,12 +28,20 @@ export default function Jobs({ searchQuery, locationQuery }) {
         }
         const { data } = await API.get(url)
         setJobs(data.jobs)
+        setTotalPages(data.totalPages)
       }
       catch (error) {
         console.log(error)
       }
+      finally {
+        setLoading(false)
+      }
     }
     fetchJobs()
+  }, [searchQuery, locationQuery, page])
+
+  useEffect(() => {
+    setPage(1)
   }, [searchQuery, locationQuery])
 
   function handlebutton() {
@@ -83,20 +95,46 @@ export default function Jobs({ searchQuery, locationQuery }) {
       >
 
         {
-          jobs.length > 0 ? (
+          loading ? (
+            <h1 className='text-center text-3xl mt-20'>
+              Loading...
+            </h1>
+          ) : jobs.length > 0 ? (
             jobs.map((job) => (
               <JobCard
                 key={job._id}
                 job={job}
               />
             ))
-
           ) : (
-            <h1 className='text-center text-3xl mt-20'>
-              Loading...
+            <h1 className='text-center text-3xl mt-20 text-gray-500'>
+              No Jobs Found
             </h1>
           )
         }
+      </div>
+
+      <div className='flex justify-center items-center gap-4 mt-10'>
+
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className='bg-black text-white px-4 py-2 rounded disabled:opacity-50'
+        >
+          Prev
+        </button>
+
+        <span className='font-semibold'>
+          {page} / {totalPages}
+        </span>
+
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className='bg-black text-white px-4 py-2 rounded disabled:opacity-50'
+        >
+          Next
+        </button>
 
       </div>
 

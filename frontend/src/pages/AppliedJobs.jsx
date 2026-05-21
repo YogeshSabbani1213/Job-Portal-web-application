@@ -83,7 +83,7 @@ const AppliedJobs = () => {
           {
             appliedJobs.length > 0 ? (
 
-              appliedJobs.map((item,index)=>(
+              appliedJobs.map((item, index) => (
 
                 <div
                   key={index}
@@ -185,17 +185,16 @@ const AppliedJobs = () => {
                           text-sm font-semibold
                           flex items-center gap-2
 
-                          ${
-                            item.status === 'Accepted'
-                              ? 'bg-green-100 text-green-700'
+                          ${item.status === 'Accepted'
+                            ? 'bg-green-100 text-green-700'
 
-                              : item.status === 'pending'
+                            : item.status === 'pending'
                               ? 'bg-yellow-100 text-yellow-700'
 
                               : item.status === 'rejected'
-                              ? 'bg-red-100 text-red-700'
+                                ? 'bg-red-100 text-red-700'
 
-                              : 'bg-gray-100 text-gray-700'
+                                : 'bg-gray-100 text-gray-700'
                           }
                         `}
                       >
@@ -208,7 +207,7 @@ const AppliedJobs = () => {
 
                       {/* View Button */}
                       <button
-                        onClick={(e)=>{
+                        onClick={(e) => {
 
                           e.stopPropagation()
 
@@ -237,37 +236,42 @@ const AppliedJobs = () => {
               ))
 
             ) : (
+              <div>
+                <h1 className='text-center text-3xl mt-20'>
+                  Loading...
+                </h1>
 
-              <div
-                className='
+                <div
+                  className='
                   bg-white
                   rounded-3xl
                   shadow-lg
                   p-10
                   text-center
                 '
-              >
+                >
 
-                <h1
-                  className='
+                  <h1
+                    className='
                     text-3xl
                     font-bold
                     text-gray-700
                   '
-                >
+                  >
 
-                  No Applications Yet
+                    No Applications Yet
 
-                </h1>
+                  </h1>
 
-                <p className='text-gray-500 mt-4'>
+                  <p className='text-gray-500 mt-4'>
 
-                  Start applying for jobs today
+                    Start applying for jobs today
 
-                </p>
+                  </p>
+
+                </div>
 
               </div>
-
             )
           }
 
