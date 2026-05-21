@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
 import toast from 'react-hot-toast'
 import { FaBriefcase, FaUsers, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const RecruiterDashboard = () => {
-
+  const navigate = useNavigate()
   const [dashboard, setDashboard] = useState({
     totalJobs: 0,
     totalApplications: 0,
@@ -21,12 +22,12 @@ const RecruiterDashboard = () => {
       const dashboardRes = await api.get('/recruiter/dashboard');
 
       const jobsRes = await api.get('/recruiter/myjobs');
-      console.log("dashboardRes:",dashboardRes);
-      
+      console.log("dashboardRes:", dashboardRes);
+
 
       setDashboard(dashboardRes.data.dashboard);
       console.log(dashboard);
-      
+
 
       setJobs(jobsRes.data.jobs);
 
@@ -198,6 +199,15 @@ const RecruiterDashboard = () => {
                       onClick={() => deleteJob(job._id)}
                     >
                       Delete
+                    </button>
+
+                    <button
+                      className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded'
+                      onClick={() =>
+                        navigate(`/recruiter/applicants/${job._id}`)
+                      }
+                    >
+                      Applicants
                     </button>
 
                   </td>

@@ -20,7 +20,7 @@ import AppliedJobs from './pages/AppliedJobs'
 import Profile from './pages/Profile'
 import JobDetails from './pages/JobDetails'
 import { Toaster } from 'react-hot-toast'
-
+import Applicants from './pages/Recruiter/Applicants'
 
 function Layout() {
   return (
@@ -112,6 +112,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <RecruiterDashboard />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/recruiter/applicants/:jobId',
+        element: (
+          <ProtectedRoute>
+            <Applicants />
           </ProtectedRoute>
         )
       },
