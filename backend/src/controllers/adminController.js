@@ -1,6 +1,6 @@
-import userModel from "../models/userModel.js";
-import jobModel from "../models/jobModel.js";
-import applicationModel from "../models/applicationModel.js";
+import userModel from "../models/UserModel.js";
+import jobModel from "../models/JobModel.js";
+import applicationModel from "../models/ApplicationModel.js";
 
 export const getAdminDashboard=async(req,res)=>{
     try{

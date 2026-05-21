@@ -1,5 +1,5 @@
-import jobModel from '../models/jobModel.js';
-import applicationModel from '../models/applicationModel.js';
+import jobModel from '../models/JobModel.js';
+import applicationModel from '../models/ApplicationModel.js';
 
 export const getRecruiterDashboard = async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 import applicationModel from "../models/ApplicationModel.js";
-import notificationModel from '../models/notificationModel.js';
-import jobModel from '../models/jobModel.js';
+import notificationModel from '../models/NotificationModel.js';
+import jobModel from '../models/JobModel.js';
 
 export async function ApplyJob(req, res) {
   try {
