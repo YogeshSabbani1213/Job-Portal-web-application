@@ -35,31 +35,30 @@ export default function Dashboard() {
     setLocationQuery(locationText)
   }
 
+  async function fetchDashboardStats() {
+    try {
+      const applicationsRes = await API.get('/application/getmyapplications')
+
+      const savedJobsRes = await API.get('/job/getsavedjobs')
+
+      const applications = applicationsRes.data || []
+
+      const shortlisted = applications.filter(app => app.status === 'shortlisted').length
+
+      const rejected = applications.filter(app => app.status === 'rejected').length
+
+      setStats({
+        totalApplications: applicationsRes.data.length,
+        savedJobs: savedJobsRes.data.savedJobs.length,
+        shortlisted,
+        rejected
+      })      
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
 
-    async function fetchDashboardStats() {
-      try {
-        const applicationsRes = await API.get('/application/getmyapplications')
-
-        const savedJobsRes = await API.get('/job/getsavedjobs')
-
-        const applications = applicationsRes.data.applications || []
-
-        const shortlisted = applications.filter(app => app.status === 'shortlisted').length
-
-        const rejected = applications.filter(app => app.status === 'rejected').length
-
-        setStats({
-          totalApplications: applications.length,
-          savedJobs: savedJobsRes.data.savedJobs.length,
-          shortlisted,
-          rejected
-        })
-
-      } catch (error) {
-        console.log(error)
-      }
-    }
     fetchDashboardStats()
   }, [])
 
