@@ -2,9 +2,24 @@ import { useContext, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import Jobs from './Jobs.jsx'
 import { Search, MapPin } from 'lucide-react'
+import { useEffect } from 'react'
+import API from '../services/api'
+import {
+  BriefcaseBusiness,
+  Bookmark,
+  CheckCircle,
+  XCircle
+} from 'lucide-react'
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext)
+
+  const [stats, setStats] = useState({
+    totalApplications: 0,
+    savedJobs: 0,
+    shortlisted: 0,
+    rejected: 0
+  })
 
   // Search states
   const [searchText, setSearchText] = useState('')
@@ -19,6 +34,34 @@ export default function Dashboard() {
     setSearchQuery(searchText)
     setLocationQuery(locationText)
   }
+
+  useEffect(() => {
+
+    async function fetchDashboardStats() {
+      try {
+        const applicationsRes = await API.get('/application/getmyapplications')
+
+        const savedJobsRes = await API.get('/job/getsavedjobs')
+
+        const applications = applicationsRes.data.applications || []
+
+        const shortlisted = applications.filter(app => app.status === 'shortlisted').length
+
+        const rejected = applications.filter(app => app.status === 'rejected').length
+
+        setStats({
+          totalApplications: applications.length,
+          savedJobs: savedJobsRes.data.savedJobs.length,
+          shortlisted,
+          rejected
+        })
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchDashboardStats()
+  }, [])
 
   return (
     <div className='w-full max-w-7xl mx-auto px-4 py-8'>
@@ -107,6 +150,86 @@ export default function Dashboard() {
         </p>
       </div>
 
+      <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10'>
+
+        <div className='bg-white rounded-2xl shadow p-6 border'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='text-gray-500'>
+                Applications
+              </p>
+
+              <h2 className='text-3xl font-bold mt-2'>
+                {stats.totalApplications}
+              </h2>
+            </div>
+
+            <BriefcaseBusiness
+              size={40}
+              className='text-blue-500'
+            />
+          </div>
+        </div>
+
+        <div className='bg-white rounded-2xl shadow p-6 border'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='text-gray-500'>
+                Saved Jobs
+              </p>
+
+              <h2 className='text-3xl font-bold mt-2'>
+                {stats.savedJobs}
+              </h2>
+            </div>
+
+            <Bookmark
+              size={40}
+              className='text-yellow-500'
+            />
+          </div>
+        </div>
+
+        <div className='bg-white rounded-2xl shadow p-6 border'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='text-gray-500'>
+                Shortlisted
+              </p>
+
+              <h2 className='text-3xl font-bold mt-2'>
+                {stats.shortlisted}
+              </h2>
+            </div>
+
+            <CheckCircle
+              size={40}
+              className='text-green-500'
+            />
+          </div>
+        </div>
+
+        <div className='bg-white rounded-2xl shadow p-6 border'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='text-gray-500'>
+                Rejected
+              </p>
+
+              <h2 className='text-3xl font-bold mt-2'>
+                {stats.rejected}
+              </h2>
+            </div>
+
+            <XCircle
+              size={40}
+              className='text-red-500'
+            />
+          </div>
+        </div>
+      </div>
+
+      
       {/* Jobs */}
       <Jobs
         searchQuery={searchQuery}
