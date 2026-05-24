@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import API from '../services/api'
 import toast from 'react-hot-toast'
-
+import {useNavigate} from 'react-router-dom'
 
 export default function CreateJob(){
-
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     jobtitle:'',
     companyname:'',
@@ -34,10 +34,9 @@ export default function CreateJob(){
         ...formData,
         skillsrequired:formData.skillsrequired.split(',')
       }
-
       const { data } = await API.post('/job/createjob', sendData)
-
       toast.success('Job created Successfully')
+      navigate('/recruiter/dashboard')
 
     }
     catch(error){
@@ -102,7 +101,7 @@ export default function CreateJob(){
         <input
           type='number'
           name='experiencelevel'
-          placeholder='Experience'
+          placeholder='Experience in num'
           onChange={handleChange}
           className='w-full border p-3 rounded mb-4'
         />
