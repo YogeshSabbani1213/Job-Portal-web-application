@@ -27,13 +27,11 @@ const generateAIResponse = async (prompt) => {
 
   } catch (error) {
 
-    console.log(
-      error.response?.data || error.message
-    );
+    console.log("FULL ERROR:");
+    console.log(error.response?.data);
 
-    return "AI response failed";
-
-  }
+    throw error;
+}
 };
 
 export default generateAIResponse;
