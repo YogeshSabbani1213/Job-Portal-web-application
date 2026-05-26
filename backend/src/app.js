@@ -6,6 +6,7 @@ import applicationRoutes from './routes/applicationRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import recruiterRoutes from './routes/recruiterRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import aiRoute from "./routes/ai.route.js";
 
 const app = express()
 
@@ -20,5 +21,6 @@ app.use('/api/application',applicationRoutes)
 app.use('/api/notification',notificationRoutes);
 app.use('/api/recruiter', recruiterRoutes);
 app.use('/api/admin',adminRoutes)
+app.use("/api/ai", aiRoute);
 
 export default app;
