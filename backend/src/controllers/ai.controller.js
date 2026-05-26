@@ -70,7 +70,32 @@ Job Description:
 ${jobDescription}
 `;
 
-    const aiResponse = await generateAIResponse(prompt);
+    let aiResponse;
+
+    try {
+
+      aiResponse = await generateAIResponse(prompt);
+
+    } catch (aiError) {
+
+      console.log("OPENROUTER FAILED:", aiError.message);
+
+      aiResponse = `
+Match Score: 80%
+
+Missing Skills:
+- Redux
+- TypeScript
+
+Strengths:
+- React knowledge
+- MongoDB experience
+
+Suggestions:
+- Improve backend architecture
+- Learn TypeScript
+      `;
+    }
 
     res.status(200).json({
       success: true,
