@@ -60,6 +60,24 @@ export default function Navbar() {
           </Link>
 
           {
+            user && (
+              <Link
+                to='/ai-resume'
+                className='
+        bg-pink-500
+        hover:bg-cyan-600
+        px-4 py-2
+        rounded-full
+        transition
+        font-semibold
+      '
+              >
+                AI Resume
+              </Link>
+            )
+          }
+
+          {
             user?.role === 'recruiter' && (
               <Link
                 to='/create-job'
@@ -316,6 +334,24 @@ export default function Navbar() {
           >
             Jobs
           </Link>
+
+          {
+            user && (
+              <Link
+                to='/ai-resume'
+                onClick={() => setOpenMenu(false)}
+                className='
+        bg-pink-500
+        px-4 py-3
+        rounded-xl
+        text-center
+        font-semibold
+      '
+              >
+                AI Resume
+              </Link>
+            )
+          }
 
           {
             user?.role === 'recruiter' && (

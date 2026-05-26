@@ -22,7 +22,7 @@ import JobDetails from './pages/JobDetails'
 import { Toaster } from 'react-hot-toast'
 import Applicants from './pages/Recruiter/Applicants'
 import AdminDashboard from './pages/Admin/AdminDashboard'
-
+import AIResumeAnalyzer from './pages/AIResumeAnalyzer'
 function Layout() {
   return (
     <>
@@ -129,6 +129,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <AdminDashboard />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: '/ai-resume',
+        element: (
+          <ProtectedRoute>
+            <AIResumeAnalyzer />
           </ProtectedRoute>
         )
       },
