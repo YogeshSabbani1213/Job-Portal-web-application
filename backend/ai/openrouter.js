@@ -1,11 +1,16 @@
-import axios from "axios";
+import axios from 'axios'
 
 const generateAIResponse = async (prompt) => {
   try {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "openchat/openchat-7b:free", // Note: Consider upgrading to "meta-llama/llama-3-8b-instruct:free" if this model is down
+        // CHANGE THIS LINE: Use a reliable, active free model
+       model: "openrouter/free",
+        // ALTERNATIVE FREE OPTIONS IF NEEDED:
+        // "meta-llama/llama-3-8b-instruct:free"
+        // "deepseek/deepseek-chat:free"
+
         messages: [
           {
             role: "user",
@@ -29,10 +34,9 @@ const generateAIResponse = async (prompt) => {
 
     return response.data.choices[0].message.content;
   } catch (axiosError) {
-    // This highlights exactly what OpenRouter is complaining about in your terminal logs
     console.error("OpenRouter API Error Details:", axiosError.response?.data || axiosError.message);
     throw new Error(`OpenRouter API failed: ${axiosError.message}`);
   }
 };
 
-export default generateAIResponse;
+export default generateAIResponse
