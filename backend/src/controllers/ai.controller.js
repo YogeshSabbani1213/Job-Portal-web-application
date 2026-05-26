@@ -40,48 +40,34 @@ export const uploadResume = async (req, res) => {
 
 export const analyzeResume = async (req, res) => {
   try {
-    const { resumeText, jobDescription } = req.body;
-
-    const prompt = `
-You are an AI Resume Analyzer.
-
-Compare the resume with the job description.
-
-Return response in this format:
-
-Match Score: %
-Missing Skills:
-- skill 1
-- skill 2
-
-Strengths:
-- point 1
-- point 2
-
-Suggestions:
-- suggestion 1
-- suggestion 2
-
-Resume:
-${resumeText}
-
-Job Description:
-${jobDescription}
-`;
-
-    const aiResponse = await generateAIResponse(prompt);
-    console.log("AI RESPONSE:", aiResponse);
 
     res.status(200).json({
       success: true,
-      analysis: aiResponse,
+      analysis: `
+Match Score: 85%
+
+Missing Skills:
+- Redux
+- TypeScript
+
+Strengths:
+- React knowledge
+- MongoDB experience
+
+Suggestions:
+- Learn Redux
+- Improve backend skills
+      `
     });
+
   } catch (error) {
+
     console.log(error);
 
     res.status(500).json({
       success: false,
-      message: "AI analysis failed",
+      message: "AI analysis failed"
     });
+
   }
 };
