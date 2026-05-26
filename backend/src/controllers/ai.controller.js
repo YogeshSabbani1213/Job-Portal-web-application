@@ -40,23 +40,26 @@ export const uploadResume = async (req, res) => {
 
 export const analyzeResume = async (req, res) => {
   try {
-
     const { resumeText, jobDescription } = req.body;
+
+    if (!resumeText || !jobDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing resume text or job description",
+      });
+    }
 
     const prompt = `
 You are an AI Resume Analyzer.
-
 Compare the resume with the job description.
-
-Return ONLY valid JSON.
+Return ONLY a valid JSON object matching the format below. Do not include any introductory or concluding text, and do not use markdown blocks.
 
 Format:
-
 {
-  "score": number,
-  "missingSkills": [],
-  "strengths": [],
-  "suggestions": []
+  "score": 85,
+  "missingSkills": ["Skill 1", "Skill 2"],
+  "strengths": ["Strength 1"],
+  "suggestions": ["Suggestion 1"]
 }
 
 Resume:
@@ -67,27 +70,37 @@ ${jobDescription}
 `;
 
     const rawResponse = await generateAIResponse(prompt);
+    console.log("RAW AI RESPONSE:", rawResponse); // Useful for debugging what the AI said
 
-    const cleanedResponse = rawResponse
+    // Clean up markdown block wraps if the AI appended them anyway
+    let cleanedResponse = rawResponse
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    const aiResponse = JSON.parse(cleanedResponse);
+    let aiResponse;
+    try {
+      aiResponse = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error("JSON Parsing Failed. Cleaned string was:", cleanedResponse);
+      
+      // Fallback object so your app doesn't crash 
+      return res.status(422).json({
+        success: false,
+        message: "AI returned invalid JSON formatting. Please try again.",
+      });
+    }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       analysis: aiResponse,
     });
 
   } catch (error) {
-
-    console.log("AI ANALYSIS ERROR:", error);
-
-    res.status(500).json({
+    console.log("AI ANALYSIS GLOBAL ERROR:", error.message);
+    return res.status(500).json({
       success: false,
-      message: "Failed to analyze resume",
+      message: error.message || "Failed to analyze resume",
     });
-
   }
 };
