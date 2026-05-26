@@ -23,11 +23,13 @@ import { Toaster } from 'react-hot-toast'
 import Applicants from './pages/Recruiter/Applicants'
 import AdminDashboard from './pages/Admin/AdminDashboard'
 import AIResumeAnalyzer from './pages/AIResumeAnalyzer'
+import FloatingAIButton from './components/FloatingAIButton'
 function Layout() {
   return (
     <>
       <Navbar />
       <Outlet />
+      <FloatingAIButton />
     </>
   )
 }

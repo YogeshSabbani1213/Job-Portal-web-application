@@ -55,21 +55,63 @@ const AIResumeAnalyzer = () => {
                 </h1>
 
                 <div className="mb-5">
-                    <label className="font-semibold block mb-2">
+                    <label className="font-semibold block mb-3 text-lg">
                         Upload Resume PDF
                     </label>
 
-                    <input
-                        type="file"
-                        accept=".pdf"
-                        onChange={(e) => setResumeFile(e.target.files[0])}
-                        className="w-full border p-3 rounded-lg"
-                    />
+                    <label
+                        className="
+            flex items-center justify-between
+            border-2 border-dashed border-cyan-400
+            bg-cyan-50
+            hover:bg-cyan-100
+            transition-all duration-300
+            rounded-2xl
+            px-5 py-5
+            cursor-pointer
+        "
+                    >
+
+                        <div>
+                            <p className="font-semibold text-gray-700">
+                                {resumeFile
+                                    ? resumeFile.name
+                                    : "Choose Resume PDF"}
+                            </p>
+
+                            <p className="text-sm text-gray-500 mt-1">
+                                Upload your resume for AI analysis
+                            </p>
+                        </div>
+
+                        <div
+                            className="
+                bg-cyan-500
+                hover:bg-cyan-600
+                text-white
+                px-5 py-2
+                rounded-xl
+                font-semibold
+                transition
+            "
+                        >
+                            Browse
+                        </div>
+
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            hidden
+                            onChange={(e) =>
+                                setResumeFile(e.target.files[0])
+                            }
+                        />
+                    </label>
                 </div>
 
                 <div className="mb-5">
                     <label className="font-semibold block mb-2">
-                        Job Description
+                        Paste the Job Description of Your Job
                     </label>
 
                     <textarea
@@ -99,7 +141,7 @@ const AIResumeAnalyzer = () => {
                     <div className="mt-10 space-y-6">
 
                         {/* SCORE */}
-                        <div className="bg-gradient-to-r from-black to-gray-800 text-white p-8 rounded-3xl shadow-xl">
+                        <div className="bg-linear-to-r from-black to-gray-800 text-white p-8 rounded-3xl shadow-xl">
                             <h2 className="text-2xl font-bold mb-5">
                                 AI Match Score
                             </h2>
