@@ -44,7 +44,9 @@ export const analyzeResume = async (req, res) => {
     const { resumeText, jobDescription } = req.body;
 
     const prompt = `
-Analyze this resume against the job description.
+You are an AI Resume Analyzer.
+
+Compare the resume with the job description.
 
 Return ONLY valid JSON.
 
@@ -64,39 +66,14 @@ Job Description:
 ${jobDescription}
 `;
 
-    let aiResponse;
+    const rawResponse = await generateAIResponse(prompt);
 
-    try {
+    const cleanedResponse = rawResponse
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
-      aiResponse = await generateAIResponse(prompt);
-
-      aiResponse = aiResponse
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
-
-      aiResponse = JSON.parse(aiResponse);
-
-    } catch (aiError) {
-
-      console.log("AI FAILED:", aiError.message);
-
-      aiResponse = {
-        score: 80,
-        missingSkills: [
-          "Redux",
-          "TypeScript"
-        ],
-        strengths: [
-          "React knowledge",
-          "MongoDB experience"
-        ],
-        suggestions: [
-          "Improve backend architecture",
-          "Learn TypeScript"
-        ]
-      };
-    }
+    const aiResponse = JSON.parse(cleanedResponse);
 
     res.status(200).json({
       success: true,
@@ -105,11 +82,11 @@ ${jobDescription}
 
   } catch (error) {
 
-    console.log(error);
+    console.log("AI ANALYSIS ERROR:", error);
 
     res.status(500).json({
       success: false,
-      message: "AI analysis failed",
+      message: "Failed to analyze resume",
     });
 
   }
