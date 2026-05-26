@@ -44,24 +44,18 @@ export const analyzeResume = async (req, res) => {
     const { resumeText, jobDescription } = req.body;
 
     const prompt = `
-You are an AI Resume Analyzer.
+Analyze this resume against the job description.
 
-Compare the resume with the job description.
+Return ONLY valid JSON.
 
-Return response in this format:
+Format:
 
-Match Score: %
-Missing Skills:
-- skill 1
-- skill 2
-
-Strengths:
-- point 1
-- point 2
-
-Suggestions:
-- suggestion 1
-- suggestion 2
+{
+  "score": number,
+  "missingSkills": [],
+  "strengths": [],
+  "suggestions": []
+}
 
 Resume:
 ${resumeText}
@@ -76,25 +70,32 @@ ${jobDescription}
 
       aiResponse = await generateAIResponse(prompt);
 
+      aiResponse = aiResponse
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      aiResponse = JSON.parse(aiResponse);
+
     } catch (aiError) {
 
-      console.log("OPENROUTER FAILED:", aiError.message);
+      console.log("AI FAILED:", aiError.message);
 
-      aiResponse = `
-Match Score: 80%
-
-Missing Skills:
-- Redux
-- TypeScript
-
-Strengths:
-- React knowledge
-- MongoDB experience
-
-Suggestions:
-- Improve backend architecture
-- Learn TypeScript
-      `;
+      aiResponse = {
+        score: 80,
+        missingSkills: [
+          "Redux",
+          "TypeScript"
+        ],
+        strengths: [
+          "React knowledge",
+          "MongoDB experience"
+        ],
+        suggestions: [
+          "Improve backend architecture",
+          "Learn TypeScript"
+        ]
+      };
     }
 
     res.status(200).json({
