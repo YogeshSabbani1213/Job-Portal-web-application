@@ -70,6 +70,7 @@ ${jobDescription}
 `;
 
     const aiResponse = await generateAIResponse(prompt);
+    console.log("AI RESPONSE:", aiResponse);
 
     res.status(200).json({
       success: true,
