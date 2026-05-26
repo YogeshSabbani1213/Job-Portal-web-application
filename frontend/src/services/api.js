@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'https://job-portal-web-application-y35m.onrender.com/api'
+  baseURL: 'http://localhost:5005/api'
 })
 
 API.interceptors.request.use((req) => {
