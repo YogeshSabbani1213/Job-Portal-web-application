@@ -12,7 +12,8 @@ const AIResumeAnalyzer = () => {
         try {
             setLoading(true);
             console.log("Starting analysis...");
-            const formData = new FormData();
+            
+        const formData = new FormData();
 
             formData.append("resume", resumeFile);
 
