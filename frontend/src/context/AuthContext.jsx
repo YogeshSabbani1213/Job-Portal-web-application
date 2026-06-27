@@ -12,52 +12,39 @@ export default function AuthProvider({ children }) {
 
   // Restore user after refresh
   useEffect(() => {
-
     const storedUser = localStorage.getItem('user')
-
     if(storedUser){
-
       setUser(JSON.parse(storedUser))
-
     }
-
     setLoading(false)
-
   }, [])
 
   // Login function
   function login(userData, token){
-
     // Save user
     localStorage.setItem(
       'user',
       JSON.stringify(userData)
     )
-
     // Save token
     localStorage.setItem(
       'token',
       token
     )
-
     // Update state
     setUser(userData)
   }
 
   // Logout function
   function logout(){
-
     // Remove localStorage
     localStorage.removeItem('user')
-
     localStorage.removeItem('token')
-
     // Clear state
     setUser(null)
   }
 
   return (
-
     <AuthContext.Provider
       value={{
         user,
@@ -66,10 +53,7 @@ export default function AuthProvider({ children }) {
         loading
       }}
     >
-
       {children}
-
     </AuthContext.Provider>
-
   )
 }
