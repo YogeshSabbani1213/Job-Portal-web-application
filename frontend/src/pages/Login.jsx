@@ -18,7 +18,6 @@ export default function Login() {
   })
 
   const handleChange = (e) => {
-
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -26,20 +25,12 @@ export default function Login() {
   }
 
   const handleSubmit = async (e) => {
-
     e.preventDefault()
-
     try {
-
       const { data } = await API.post('/auth/login', formData)
-
       login(data.user, data.token)
-
       toast.success('Login Successfully')
-
-
       navigate('/Dashboard')
-
     }
     catch (error) {
       console.log(error)
