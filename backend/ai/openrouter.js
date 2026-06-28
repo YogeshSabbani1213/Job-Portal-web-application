@@ -1,16 +1,13 @@
-import axios from 'axios'
+//This file is responsible for talking to the AI.
 
-const generateAIResponse = async (prompt) => {
+import axios from 'axios'       //To make HTTP requests.Sends a POST request to OpenRouter API.
+
+async function generateAIResponse(prompt){
   try {
     const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
+      "https://openrouter.ai/api/v1/chat/completions", //This is the AI endpoint.All prompts are sent here.It comes from the OpenRouter API documentation.
       {
-        // CHANGE THIS LINE: Use a reliable, active free model
-       model: "openrouter/free",
-        // ALTERNATIVE FREE OPTIONS IF NEEDED:
-        // "meta-llama/llama-3-8b-instruct:free"
-        // "deepseek/deepseek-chat:free"
-
+       model: "openrouter/free", //Tells OpenRouter which AI model to use.
         messages: [
           {
             role: "user",
@@ -18,11 +15,12 @@ const generateAIResponse = async (prompt) => {
           },
         ],
       },
+      //Contains API Key and project information.
       {
-        headers: {
+        headers: { 
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://job-portal-web-application-y35m.onrender.com",
+          "Content-Type": "application/json",                         //Tells server we're sending JSON.
+          "HTTP-Referer": "https://job-portal-web-application-y35m.onrender.com",//Identifies which website is making the request.
           "X-Title": "Job Portal AI"
         },
       }
@@ -31,9 +29,9 @@ const generateAIResponse = async (prompt) => {
     if (!response.data?.choices?.[0]?.message?.content) {
       throw new Error("Invalid response structure from OpenRouter API");
     }
-
-    return response.data.choices[0].message.content;
-  } catch (axiosError) {
+    return response.data.choices[0].message.content; //Return only AI text.Instead of whole response
+  } 
+  catch (axiosError) {
     console.error("OpenRouter API Error Details:", axiosError.response?.data || axiosError.message);
     throw new Error(`OpenRouter API failed: ${axiosError.message}`);
   }
