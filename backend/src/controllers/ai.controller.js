@@ -1,23 +1,27 @@
-import fs from "fs";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import fs from "fs";//Read the uploaded PDF file.
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";//Read PDF content.
 import generateAIResponse from "../../ai/openrouter.js";
 
+//Extract text from uploaded PDF.
 export const uploadResume = async (req, res) => {
   try {
-    const filePath = req.file.path;
+    const filePath = req.file.path; //Get uploaded file location.
 
-    const data = new Uint8Array(fs.readFileSync(filePath));
+    const data = new Uint8Array(fs.readFileSync(filePath)); //Converts PDF into binary data.
 
-    const pdf = await pdfjsLib.getDocument({ data }).promise;
+    const pdf = await pdfjsLib.getDocument({ data }).promise;//Open the PDF.
+    //getDocument() opens the PDF and returns a PDF object, allowing us to access its pages and content."
 
-    let extractedText = "";
+    let extractedText = "";//Store all extracted text.
 
+    //Read every page.
     for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
+      const page = await pdf.getPage(i);//Get one page.getPage() retrieves a specific page from the loaded PDF."
 
-      const textContent = await page.getTextContent();
+      const textContent = await page.getTextContent(); //Extract text from page.
+      //"getTextContent() extracts all the text elements from a page. We then combine those elements into readable text."
 
-      const pageText = textContent.items
+      const pageText = textContent.items    //Combine small text pieces.
         .map((item) => item.str)
         .join(" ");
 
@@ -38,9 +42,11 @@ export const uploadResume = async (req, res) => {
   }
 };
 
+
+//Compare Resume with Job Description.
 export const analyzeResume = async (req, res) => {
   try {
-    const { resumeText, jobDescription } = req.body;
+    const { resumeText, jobDescription } = req.body;  //Receive data from frontend.
 
     if (!resumeText || !jobDescription) {
       return res.status(400).json({
@@ -49,6 +55,7 @@ export const analyzeResume = async (req, res) => {
       });
     }
 
+    // Create instructions for AI.
     const prompt = `
 You are an AI Resume Analyzer.
 Compare the resume with the job description.
@@ -69,19 +76,20 @@ Job Description:
 ${jobDescription}
 `;
 
-    const rawResponse = await generateAIResponse(prompt);
+    const rawResponse = await generateAIResponse(prompt);   //Send prompt to OpenRouter.
     console.log("RAW AI RESPONSE:", rawResponse); // Useful for debugging what the AI said
 
     // Clean up markdown block wraps if the AI appended them anyway
     let cleanedResponse = rawResponse
-      .replace(/```json/g, "")
+      .replace(/```json/g, "")//Sometimes AI returns markdown. Remove unnecessary formatting.
       .replace(/```/g, "")
       .trim();
 
     let aiResponse;
     try {
-      aiResponse = JSON.parse(cleanedResponse);
-    } catch (parseError) {
+      aiResponse = JSON.parse(cleanedResponse);   //Convert JSON string into JavaScript object.
+    } 
+    catch (parseError) {
       console.error("JSON Parsing Failed. Cleaned string was:", cleanedResponse);
       
       // Fallback object so your app doesn't crash 
