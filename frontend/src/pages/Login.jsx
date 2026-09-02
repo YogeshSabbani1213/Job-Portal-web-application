@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import { AuthContext } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import { GoogleLogin } from '@react-oauth/google'
 
 
 export default function Login() {
 
-  const { login } = useContext(AuthContext)
+  const { login } = useContext(AuthContext)   //gets the login() function from AuthProvider.
 
   const navigate = useNavigate()
 
@@ -19,13 +20,13 @@ export default function Login() {
 
   const handleChange = (e) => {
     setFormData({
-      ...formData,
+      ...formData,//(Spread operator) Copies old values.
       [e.target.name]: e.target.value
     })
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault()//stops page refresh
     try {
       const { data } = await API.post('/auth/login', formData)
       login(data.user, data.token)
@@ -43,7 +44,7 @@ export default function Login() {
     <div className='min-h-screen flex justify-center items-center p-4'>
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit}//Runs when form is submitted
         className='bg-white shadow-xl rounded-xl p-8 w-full max-w-md'
       >
 
@@ -70,6 +71,18 @@ export default function Login() {
         <button className='bg-black text-white w-full py-3 rounded'>
           Login
         </button>
+
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            console.log("Google Login Success")
+
+            console.log(credentialResponse)
+          }}
+
+          onError={() => {
+            console.log("Google Login Failed")
+          }}
+        />
 
       </form>
 

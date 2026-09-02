@@ -3,45 +3,33 @@ import { createContext, useEffect, useState } from 'react'
 export const AuthContext = createContext()
 
 export default function AuthProvider({ children }) {
-
-  // User state
-  const [user, setUser] = useState(null)
-
-  // Loading state
-  const [loading, setLoading] = useState(true)
+  
+  const [user, setUser] = useState(null)// User state
+  const [loading, setLoading] = useState(true)// Loading state
 
   // Restore user after refresh
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
     if(storedUser){
-      setUser(JSON.parse(storedUser))
+      setUser(JSON.parse(storedUser))//String ➜ Object
     }
     setLoading(false)
   }, [])
 
   // Login function
   function login(userData, token){
-    // Save user
-    localStorage.setItem(
-      'user',
-      JSON.stringify(userData)
-    )
-    // Save token
-    localStorage.setItem(
-      'token',
-      token
-    )
-    // Update state
-    setUser(userData)
+    localStorage.setItem("user", JSON.stringify(userData))// Save user Object ➜ String
+    localStorage.setItem("token", token)// Save token
+   
+    setUser(userData) // Update state
   }
 
   // Logout function
   function logout(){
-    // Remove localStorage
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    // Clear state
-    setUser(null)
+    localStorage.removeItem('user')// Remove localStorage
+    localStorage.removeItem('token')// Remove localStorage
+    
+    setUser(null)// Clear state
   }
 
   return (
