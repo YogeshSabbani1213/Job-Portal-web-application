@@ -1,6 +1,9 @@
 import userModel from "../models/UserModel.js"
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
+import OAuth2Client from 'google-auth-library';
+
+
 
 
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWI2OWMxYzE2MTNjZTAwZDRkNzQ2NjAiLCJpYXQiOjE3NzM1ODAzMDd9.lQmXGTBlCY05VInjrCtmolnyyEEcOgXe6oNZq-pkYa4
@@ -11,6 +14,43 @@ import jwt from 'jsonwebtoken'
 
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWNmYjE2NTRkZWI2Y2NlOTUxOWQ4NjciLCJpYXQiOjE3NzUyMTkxMzl9.AJ_OTQnDhMncJq7cK8oUdSv1brxORuP6oG_yfQRKvDw
 //krishna(admin)
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleLogin = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        // Verify Google ID Token
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+
+        // Get user information from Google
+        const payload = ticket.getPayload();
+
+        console.log(payload);
+
+        const googleId = payload.sub;
+        const name = payload.name;
+        const email = payload.email;
+        const picture = payload.picture;
+
+        return res.json({
+            message: "Google token verified successfully",
+            googleId,
+            name,
+            email,
+            picture
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(401).json({
+            message: "Invalid Google Token"
+        });
+    }
+};
 
 export async function register(req, res) {
     try {
@@ -38,8 +78,8 @@ export async function register(req, res) {
             email,
             password: hasedPass,
             role,
-            skills:role==='job seeker'?skills:[],
-            resume:role==='job seeker'?resume:null
+            skills: role === 'job seeker' ? skills : [],
+            resume: role === 'job seeker' ? resume : null
         })
         return res.status(201).json({ message: 'User created successfully', newuser })
     }
@@ -83,26 +123,26 @@ export async function login(req, res) {
 
 }
 
-export async function getAllUsers(req,res) {
-    try{
+export async function getAllUsers(req, res) {
+    try {
         const users = await userModel.find().select('-password')
-        return res.status(200).json({users})
+        return res.status(200).json({ users })
     }
-    catch(error){
-        return res.status(500).json({error:error.message})
+    catch (error) {
+        return res.status(500).json({ error: error.message })
     }
 }
 
-export async function deleteUser(req,res){
-    try{
+export async function deleteUser(req, res) {
+    try {
         const user = await userModel.findById(req.params.id);
-        if(!user){
+        if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
         await userModel.findByIdAndDelete(req.params.id);
-        return res.status(200).json({message:'Deleted Successfully'});
-    }catch(error){
-        return res.status(500).json({error:error.message})
+        return res.status(200).json({ message: 'Deleted Successfully' });
+    } catch (error) {
+        return res.status(500).json({ error: error.message })
     }
 }
 
