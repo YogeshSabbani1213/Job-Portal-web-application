@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         minlength: [6, 'password must be 6 characters']
     },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
     role: {
         type: String,
         required: true,
