@@ -5,6 +5,7 @@ import API from '../services/api'
 import { AuthContext } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { GoogleLogin } from '@react-oauth/google'
+import axios from "axios";
 
 
 export default function Login() {
@@ -38,6 +39,27 @@ export default function Login() {
       toast.error(error.response?.data?.message || error.message)
     }
   }
+
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const googleToken = credentialResponse.credential
+      const { data } = await API.post('/auth/google', {
+        token: googleToken
+      })
+
+      // Save user and JWT using AuthContext
+      login(data.user, data.token)
+      toast.success('Google Login Successful')
+      navigate('/dashboard')
+    } catch (error) {
+      console.log(error)
+      toast.error(
+        error.response?.data?.message || 'Google Login Failed'
+      )
+    }
+  }
+
 
   return (
 
@@ -73,12 +95,7 @@ export default function Login() {
         </button>
 
         <GoogleLogin
-          onSuccess={(credentialResponse) => {
-            console.log("Google Login Success")
-
-            console.log(credentialResponse)
-          }}
-
+          onSuccess={handleGoogleSuccess}
           onError={() => {
             console.log("Google Login Failed")
           }}
