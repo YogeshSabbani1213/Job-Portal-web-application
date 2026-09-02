@@ -5,36 +5,45 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+
     email: {
         type: String,
         required: [true, 'email is required'],
         unique: true,
         lowercase: true,
-
     },
+
     password: {
         type: String,
         minlength: [6, 'password must be 6 characters']
     },
+
     googleId: {
         type: String,
         unique: true,
         sparse: true
     },
+
+    picture: {
+        type: String
+    },
+
     role: {
         type: String,
         required: true,
         enum: ['job seeker', 'recruiter', 'admin'],
-        default: "jobseeker"
+        default: 'job seeker'
     },
+
     skills: {
         type: [String],
-        default: [],
-        required: true,
+        default: []
     },
+
     resume: {
-        type: String,
+        type: String
     },
+
     savedJobs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Job'
@@ -42,5 +51,4 @@ const userSchema = new mongoose.Schema({
 
 })
 
-// const userModel = mongoose.model('User',userSchema)
-export default mongoose.models.User || mongoose.model("User", userSchema);
+export default mongoose.models.User || mongoose.model('User', userSchema)

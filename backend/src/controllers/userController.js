@@ -1,7 +1,7 @@
 import userModel from "../models/UserModel.js"
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
-import OAuth2Client from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 
 
 
@@ -16,41 +16,69 @@ import OAuth2Client from 'google-auth-library';
 //krishna(admin)
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const googleLogin = async (req, res) => {
+export const googleLogin = async (req, res) => {
     try {
-        const { token } = req.body;
-
-        // Verify Google ID Token
+        const { token } = req.body
+        // Step 1: Verify Google Token
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID
-        });
+        })
 
-        // Get user information from Google
-        const payload = ticket.getPayload();
-
-        console.log(payload);
-
-        const googleId = payload.sub;
-        const name = payload.name;
-        const email = payload.email;
-        const picture = payload.picture;
-
-        return res.json({
-            message: "Google token verified successfully",
-            googleId,
+        // Step 2: Get Google User Details
+        const payload = ticket.getPayload()
+        const {
+            sub: googleId,
             name,
             email,
             picture
-        });
-    }
-    catch (error) {
-        console.log(error);
+        } = payload
+
+        // Step 3: Check if user already exists
+        let user = await userModel.findOne({ email })
+
+        // Step 4: If user does not exist, create user
+        if (!user) {
+            user = await userModel.create({
+                fullname: name,
+                email,
+                googleId,
+                picture,
+
+                // Default values for Google users
+                role: 'job seeker',
+                skills: []
+            })
+        }
+
+        // Step 5: Generate YOUR application's JWT
+        const jwtToken = jwt.sign(
+            { _id: user._id },
+            process.env.JWT_SECRETKEY
+        )
+
+        // Step 6: Send JWT and User to Frontend
+        return res.status(200).json({
+            message: 'Google Login Successful',
+            user: {
+                _id: user._id,
+                fullname: user.fullname,
+                email: user.email,
+                role: user.role,
+                skills: user.skills,
+                resume: user.resume,
+                picture: user.picture
+            },
+            token: jwtToken
+        })
+    } catch (error) {
+        console.log(error)
         return res.status(401).json({
-            message: "Invalid Google Token"
-        });
+            message: 'Google Login Failed',
+            error: error.message
+        })
     }
-};
+}
 
 export async function register(req, res) {
     try {
@@ -97,6 +125,11 @@ export async function login(req, res) {
         const user = await userModel.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Please register before login' })
+        }
+        if (!user.password) {
+            return res.status(400).json({
+                message: 'Please login using Google'
+            })
         }
         const validPassword = await bcrypt.compare(password, user.password)
         if (!validPassword) {
