@@ -4,6 +4,10 @@ import jobModel from '../models/JobModel.js';
 
 export async function ApplyJob(req, res) {
   try {
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+    console.log("USER:", req.user);
+
     const { jobId } = req.body;
 
     // Check if resume is uploaded
@@ -35,6 +39,7 @@ export async function ApplyJob(req, res) {
     return res.status(200).json({ message: 'Applied Successfully', appliedJob })
   }
   catch (error) {
+    console.log("APPLY JOB ERROR:", error);
     return res.status(400).json({ error: error.message });
   }
 }
