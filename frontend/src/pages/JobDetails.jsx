@@ -106,11 +106,19 @@ export default function JobDetails() {
                 <div className="bg-white p-6 rounded-xl w-100">
                   <h2 className="text-xl font-bold mb-4">Upload Your Resume</h2>
 
-                  <input type="file" accept=".pdf" onChange={(e) => setResume(e.target.files[0])} className="mb-4" />
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) => setResume(e.target.files[0])}
+                    className="mb-4"
+                  />
 
                   <div className="flex gap-3">
                     <button
-                      onClick={() => setShowResumeModal(false)}
+                      onClick={() => {
+                        setShowResumeModal(false);
+                        setResume(null);
+                      }}
                       className="bg-gray-300 px-4 py-2 rounded-lg"
                     >
                       Cancel
