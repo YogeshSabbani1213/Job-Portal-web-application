@@ -5,9 +5,9 @@ import jobModel from '../models/JobModel.js';
 export async function ApplyJob(req, res) {
   try {
     const { jobId } = req.body;
-    
+
     // Check if resume is uploaded
-    if (!req.file) {
+    if (!req.file.path) {
       return res.status(400).json({
         message: "Resume is required"
       });
