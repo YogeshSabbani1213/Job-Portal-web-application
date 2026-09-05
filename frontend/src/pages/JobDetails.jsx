@@ -102,31 +102,37 @@ export default function JobDetails() {
             </button>
 
             {showResumeModal && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-xl w-100">
+              <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
                   <h2 className="text-xl font-bold mb-4">Upload Your Resume</h2>
 
                   <input
                     type="file"
                     accept=".pdf"
-                    onChange={(e) => setResume(e.target.files[0])}
-                    className="mb-4"
+                    onChange={(e) => setResume(e.target.files?.[0] || null)}
+                    className="mb-4 w-full border p-2 rounded-lg"
                   />
 
-                  <div className="flex gap-3">
+                  {resume && (
+                    <p className="text-sm text-gray-600 mb-4 break-all">
+                      Selected: {resume.name}
+                    </p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => {
                         setShowResumeModal(false);
                         setResume(null);
                       }}
-                      className="bg-gray-300 px-4 py-2 rounded-lg"
+                      className="bg-gray-300 px-4 py-3 rounded-lg w-full"
                     >
                       Cancel
                     </button>
 
                     <button
                       onClick={applyJob}
-                      className="bg-black text-white px-4 py-2 rounded-lg"
+                      className="bg-black text-white px-4 py-3 rounded-lg w-full"
                     >
                       Submit Application
                     </button>
