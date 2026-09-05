@@ -84,7 +84,7 @@ export default function JobDetails() {
 
             <button
               onClick={() => {
-                showResumeModal(true);
+                setShowResumeModal(true);
               }}
               className="mt-8 bg-black text-white py-4 rounded-2xl hover:bg-gray-800 transition text-lg font-semibold"
             >
