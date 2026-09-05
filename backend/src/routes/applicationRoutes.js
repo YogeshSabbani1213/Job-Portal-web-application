@@ -18,7 +18,7 @@ import { authorizeroles } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
-router.post('/applyjob', verifyToken, upload.single('resumeURL'), authorizeroles("job seeker"), ApplyJob);
+router.post('/applyjob', verifyToken, upload.single('resume'), authorizeroles("job seeker"), ApplyJob);
 
 router.get('/job/:jobId', verifyToken,authorizeroles('recruiter'), getjobApplications);
 
