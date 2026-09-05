@@ -8,6 +8,7 @@ import API from "../services/api";
 export default function JobDetails() {
   const { id } = useParams();
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const [resume, setResume] = useState(null);
   const [job, setJob] = useState(null);
 
   useEffect(() => {
@@ -25,12 +26,21 @@ export default function JobDetails() {
   }, [id]);
 
   async function applyJob() {
+    if (!resume) {
+      toast.error("Please Upload the resume");
+      return;
+    }
     try {
-      const { data } = await API.post("/application/applyjob", {
-        jobId: job._id,
-      });
+      const formData = new FormData();
+      formData.append("resume", resume);
+      formData.append("jobId", job._id);
+
+      const { data } = await API.post("/application/applyjob", formData);
 
       toast.success(data.message);
+
+      setShowResumeModal(false);
+      setResume(null);
     } catch (error) {
       console.log(error);
       console.log(error.response?.data?.message || error.message);
@@ -96,7 +106,7 @@ export default function JobDetails() {
                 <div className="bg-white p-6 rounded-xl w-100">
                   <h2 className="text-xl font-bold mb-4">Upload Your Resume</h2>
 
-                  <input type="file" accept=".pdf" className="mb-4" />
+                  <input type="file" accept=".pdf" onChange={(e) => setResume(e.target.files[0])} className="mb-4" />
 
                   <div className="flex gap-3">
                     <button
