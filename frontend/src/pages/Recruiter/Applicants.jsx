@@ -89,7 +89,7 @@ const Applicants = () => {
 
                   <td className="p-4">
                     <a
-                      href={`${BACKEND_URL}/${app.resumeURL}`}
+                      href={`${BACKEND_URL}/${app.resume}`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-500 underline"
