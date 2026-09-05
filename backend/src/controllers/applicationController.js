@@ -5,6 +5,13 @@ import jobModel from '../models/JobModel.js';
 export async function ApplyJob(req, res) {
   try {
     const { jobId } = req.body;
+    
+    // Check if resume is uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Resume is required"
+      });
+    }
     const existingApplication = await applicationModel.findOne({
       job: jobId,
       applicant: req.user._id,
@@ -15,7 +22,7 @@ export async function ApplyJob(req, res) {
     const appliedJob = await applicationModel.create({
       job: jobId,
       applicant: req.user._id,
-      resumeURL: req.file ? req.file.path : null
+      resumeURL: req.file.path 
     })
     await appliedJob.populate("applicant", "fullname email")
     const job = await jobModel.findById(jobId);
