@@ -7,7 +7,7 @@ export async function ApplyJob(req, res) {
     const { jobId } = req.body;
 
     // Check if resume is uploaded
-    if (!req.file.path) {
+    if (!req.file) {
       return res.status(400).json({
         message: "Resume is required"
       });
