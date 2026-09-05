@@ -9,7 +9,7 @@ const applicationSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    resumeURL: { type: String },
+    resume: { type: String },
     status: {
       type: String,
       enum: ["pending", "shortlisted", "rejected", "hired"],

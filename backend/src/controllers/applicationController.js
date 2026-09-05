@@ -25,7 +25,7 @@ export async function ApplyJob(req, res) {
     const appliedJob = await applicationModel.create({
       job: jobId,
       applicant: req.user._id,
-      resumeURL: req.file.path 
+      resume: `uploads/${req.file.filename}`
     })
     await appliedJob.populate("applicant", "fullname email")
     const job = await jobModel.findById(jobId);
