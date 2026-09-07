@@ -171,7 +171,7 @@ export const withdrawApplication = async (req, res) => {
       });
     }
 
-    if (application.applicant.toString() !== req.user.id) {
+    if (application.applicant.toString() !== req.user._id) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized"
