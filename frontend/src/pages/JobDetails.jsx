@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { MapPin, BriefcaseBusiness, Clock3 } from "lucide-react";
+import {
+  BadgeIndianRupee,
+  BriefcaseBusiness,
+  Building2,
+  CheckCircle2,
+  Clock3,
+  FileText,
+  MapPin,
+  UploadCloud,
+} from "lucide-react";
 
 import API from "../services/api";
+import LoadingState from "../components/LoadingState";
 
 export default function JobDetails() {
   const { id } = useParams();
@@ -49,148 +59,184 @@ export default function JobDetails() {
   }
 
   if (!job) {
-    return <h1 className="text-center text-3xl mt-20">Loading...</h1>;
+    return (
+      <LoadingState
+        label="Loading job details"
+        description="We are preparing the role and application information."
+      />
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-6 lg:p-10 flex flex-col lg:flex-row justify-between gap-8">
-          <div className="flex-1">
-            <h1 className="text-3xl lg:text-5xl font-bold text-gray-800">
-              {job.jobtitle}
-            </h1>
-
-            <h2 className="text-xl lg:text-2xl text-cyan-600 mt-3 font-semibold">
-              {job.companyname}
-            </h2>
-
-            <div className="flex flex-wrap gap-5 mt-6 text-gray-600">
-              <div className="flex items-center gap-2">
-                <MapPin size={20} />
-                {job.location}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <BriefcaseBusiness size={20} />
-                {job.jobtype}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Clock3 size={20} />
-                {job.experiencelevel} Years
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-cyan-50 rounded-3xl p-6 min-w-70 flex flex-col justify-between">
-            <div>
-              <p className="text-gray-500 text-lg">Salary</p>
-
-              <h2 className="text-4xl font-bold text-cyan-600 mt-2">
-                ₹ {job.salary}
-              </h2>
+    <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <div className="mx-auto max-w-6xl">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="border-b border-slate-200 px-6 py-8 sm:px-8 lg:px-10">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-cyan-50 px-3 py-1 text-sm font-semibold text-cyan-700">
+              <CheckCircle2 size={16} />
+              Open position
             </div>
 
-            <button
-              onClick={() => {
-                setShowResumeModal(true);
-              }}
-              className="mt-8 bg-black text-white py-4 rounded-2xl hover:bg-gray-800 transition text-lg font-semibold"
-            >
-              Apply Now
-            </button>
-
-            {showResumeModal && (
-              <div className="fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
-                  <h2 className="text-xl font-bold mb-4">Upload Your Resume</h2>
-
-                  <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={(e) => setResume(e.target.files?.[0] || null)}
-                    className="mb-4 w-full border p-2 rounded-lg"
-                  />
-
-                  {resume && (
-                    <p className="text-sm text-gray-600 mb-4 break-all">
-                      Selected: {resume.name}
-                    </p>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={() => {
-                        setShowResumeModal(false);
-                        setResume(null);
-                      }}
-                      className="bg-gray-300 px-4 py-3 rounded-lg w-full"
-                    >
-                      Cancel
-                    </button>
-
-                    <button
-                      onClick={applyJob}
-                      className="bg-black text-white px-4 py-3 rounded-lg w-full"
-                    >
-                      Submit Application
-                    </button>
-                  </div>
+            <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+              <div>
+                <h1 className="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                  {job.jobtitle}
+                </h1>
+                <div className="mt-3 flex items-center gap-2 text-lg font-medium text-slate-600">
+                  <Building2 size={20} className="text-cyan-600" />
+                  {job.companyname}
                 </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-10">
-          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-3xl shadow-lg p-6 lg:p-8">
-              <h2 className="text-2xl font-bold mb-5">Job Description</h2>
-              <p className="text-gray-600 leading-8">{job.description}</p>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-lg p-6 lg:p-8">
-              <h2 className="text-2xl font-bold mb-5">Responsibilities</h2>
-
-              <ul className="list-disc pl-6 text-gray-600 space-y-3">
-                <li>Develop scalable applications</li>
-                <li>Collaborate with cross-functional teams</li>
-                <li>Write clean maintainable code</li>
-                <li>Participate in code reviews</li>
-                <li>Optimize performance and UI</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div className="bg-white rounded-3xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-5">Skills Required</h2>
-
-              <div className="flex flex-wrap gap-3">
-                {job.skillsrequired.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-cyan-100 text-cyan-700 px-4 py-2 rounded-full font-medium"
-                  >
-                    {skill}
-                  </span>
-                ))}
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <FileText size={17} />
+                Apply with your resume
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-5">Recruiter</h2>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                <MapPin size={17} className="text-cyan-600" />
+                {job.location}
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                <BriefcaseBusiness size={17} className="text-cyan-600" />
+                {job.jobtype}
+              </div>
+              <div className="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+                <Clock3 size={17} className="text-cyan-600" />
+                {job.experiencelevel} years experience
+              </div>
+            </div>
+          </div>
 
-              <div className="space-y-3">
-                <h3 className="font-semibold text-lg">
+          <div className="grid grid-cols-1 gap-8 p-6 sm:p-8 lg:grid-cols-3 lg:p-10">
+            <div className="space-y-8 lg:col-span-2">
+              <section>
+                <h2 className="text-xl font-bold text-slate-900">
+                  Job description
+                </h2>
+                <p className="mt-4 whitespace-pre-line leading-8 text-slate-600">
+                  {job.description}
+                </p>
+              </section>
+
+              <section className="border-t border-slate-200 pt-8">
+                <h2 className="text-xl font-bold text-slate-900">
+                  Responsibilities
+                </h2>
+                <ul className="mt-5 space-y-3 text-slate-600">
+                  {[
+                    "Develop scalable applications",
+                    "Collaborate with cross-functional teams",
+                    "Write clean maintainable code",
+                    "Participate in code reviews",
+                    "Optimize performance and UI",
+                  ].map((responsibility) => (
+                    <li key={responsibility} className="flex items-start gap-3">
+                      <CheckCircle2
+                        size={19}
+                        className="mt-0.5 shrink-0 text-cyan-600"
+                      />
+                      <span>{responsibility}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+
+            <aside className="space-y-5">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 lg:sticky lg:top-6">
+                <p className="text-sm font-medium text-slate-500">
+                  Compensation
+                </p>
+                <div className="mt-2 flex items-center gap-2 text-3xl font-bold text-slate-900">
+                  <BadgeIndianRupee size={27} className="text-cyan-600" />
+                  {job.salary}
+                </div>
+                <p className="mt-1 text-sm text-slate-500">
+                  Salary listed by the recruiter
+                </p>
+
+                <button
+                  onClick={() => setShowResumeModal(true)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-5 py-3.5 font-semibold text-white transition hover:bg-cyan-700"
+                >
+                  <UploadCloud size={19} />
+                  Apply now
+                </button>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h2 className="font-bold text-slate-900">Skills required</h2>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {job.skillsrequired.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="rounded-md bg-cyan-50 px-3 py-1.5 text-sm font-medium text-cyan-700"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <h2 className="font-bold text-slate-900">Posted by</h2>
+                <p className="mt-3 font-medium text-slate-700">
                   {job.createdBy?.fullname}
-                </h3>
-                <p className="text-gray-500">{job.createdBy?.email}</p>
+                </p>
+                <p className="mt-1 break-all text-sm text-slate-500">
+                  {job.createdBy?.email}
+                </p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        {showResumeModal && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center bg-slate-950/60 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
+              <h2 className="text-xl font-bold text-slate-900">
+                Upload your resume
+              </h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Upload a PDF resume to complete your application.
+              </p>
+
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setResume(e.target.files?.[0] || null)}
+                className="mt-5 w-full rounded-lg border border-slate-300 p-2 text-sm"
+              />
+
+              {resume && (
+                <p className="mt-3 break-all text-sm text-slate-600">
+                  Selected: {resume.name}
+                </p>
+              )}
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={() => {
+                    setShowResumeModal(false);
+                    setResume(null);
+                  }}
+                  className="w-full rounded-lg border border-slate-300 px-4 py-3 font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyJob}
+                  className="w-full rounded-lg bg-slate-900 px-4 py-3 font-medium text-white transition hover:bg-cyan-700"
+                >
+                  Submit application
+                </button>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

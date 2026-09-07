@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../services/api";
 import toast from "react-hot-toast";
+import LoadingState from "../../components/LoadingState";
 
 const BACKEND_URL = "https://job-portal-web-application-y35m.onrender.com";
 const Applicants = () => {
@@ -51,7 +52,10 @@ const Applicants = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-20 text-2xl font-semibold">Loading...</div>
+      <LoadingState
+        label="Loading applicants"
+        description="We are preparing the applications for review."
+      />
     );
   }
 

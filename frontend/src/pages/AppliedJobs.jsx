@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { MapPin, Building2, CircleCheckBig } from "lucide-react";
+import LoadingState from "../components/LoadingState";
 
 const AppliedJobs = () => {
   const [loading, setLoading] = useState(true);
@@ -28,19 +29,10 @@ const AppliedJobs = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-        {/* Spinner */}
-        <div className="w-14 h-14 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
-
-        {/* Text */}
-        <h2 className="mt-5 text-xl font-semibold text-gray-800">
-          Loading Applications...
-        </h2>
-
-        <p className="mt-2 text-gray-500">
-          Please wait while we fetch your applications
-        </p>
-      </div>
+      <LoadingState
+        label="Loading your applications"
+        description="Please wait while we fetch your application history."
+      />
     );
   }
 

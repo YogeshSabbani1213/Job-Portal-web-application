@@ -2,28 +2,29 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
-  Navigate
-} from 'react-router-dom'
+  Navigate,
+} from "react-router-dom";
 
-import { useContext } from 'react'
-import { AuthContext } from './context/AuthContext'
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 
-import Navbar from './components/Navbar'
-import RecruiterDashboard from './pages/Recruiter/RecruiterDashboard'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Jobs from './pages/Jobs'
-import Dashboard from './pages/Dashboard'
-import CreateJob from './pages/CreateJob'
-import AppliedJobs from './pages/AppliedJobs'
-import Profile from './pages/Profile'
-import JobDetails from './pages/JobDetails'
-import { Toaster } from 'react-hot-toast'
-import Applicants from './pages/Recruiter/Applicants'
-import AdminDashboard from './pages/Admin/AdminDashboard'
-import AIResumeAnalyzer from './pages/AIResumeAnalyzer'
-import FloatingAIButton from './components/FloatingAIButton'
+import Navbar from "./components/Navbar";
+import RecruiterDashboard from "./pages/Recruiter/RecruiterDashboard";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Jobs from "./pages/Jobs";
+import Dashboard from "./pages/Dashboard";
+import CreateJob from "./pages/CreateJob";
+import AppliedJobs from "./pages/AppliedJobs";
+import Profile from "./pages/Profile";
+import JobDetails from "./pages/JobDetails";
+import { Toaster } from "react-hot-toast";
+import Applicants from "./pages/Recruiter/Applicants";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AIResumeAnalyzer from "./pages/AIResumeAnalyzer";
+import FloatingAIButton from "./components/FloatingAIButton";
+import LoadingState from "./components/LoadingState";
 function Layout() {
   return (
     <>
@@ -31,128 +32,125 @@ function Layout() {
       <Outlet />
       <FloatingAIButton />
     </>
-  )
+  );
 }
 
 function ProtectedRoute({ children }) {
-
-  const { user, loading } = useContext(AuthContext)
+  const { user, loading } = useContext(AuthContext);
 
   // Wait until checking localStorage
   if (loading) {
-    return <h1>Loading...</h1>
+    return (
+      <LoadingState
+        label="Checking your session"
+        description="Please wait while we securely restore your account."
+      />
+    );
   }
 
   // If no user
   if (!user) {
-    return <Navigate to='/login' />
+    return <Navigate to="/login" />;
   }
-  return children
+  return children;
 }
 
 const router = createBrowserRouter([
-
   {
-    path: '/',
+    path: "/",
     element: <Layout />,
 
     children: [
-
       {
         index: true,
-        element: <Home />
+        element: <Home />,
       },
 
       {
-        path: 'login',
-        element: <Login />
+        path: "login",
+        element: <Login />,
       },
       {
-        path: 'job/:id',
-        element: <JobDetails />
+        path: "job/:id",
+        element: <JobDetails />,
       },
       {
-        path: 'register',
-        element: <Register />
+        path: "register",
+        element: <Register />,
       },
 
       {
-        path: 'jobs',
-        element: <Jobs />
+        path: "jobs",
+        element: <Jobs />,
       },
       {
-        path: '/appliedJobs',
-        element: <AppliedJobs />
+        path: "/appliedJobs",
+        element: <AppliedJobs />,
       },
       {
-        path: 'profile',
+        path: "profile",
         element: (
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        )
+        ),
       },
 
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: (
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
-        )
+        ),
       },
 
       {
-        path: 'create-job',
+        path: "create-job",
         element: (
           <ProtectedRoute>
             <CreateJob />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path: '/recruiter/dashboard',
+        path: "/recruiter/dashboard",
         element: (
           <ProtectedRoute>
             <RecruiterDashboard />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path: '/recruiter/applicants/:jobId',
+        path: "/recruiter/applicants/:jobId",
         element: (
           <ProtectedRoute>
             <Applicants />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path: '/admin/dashboard',
+        path: "/admin/dashboard",
         element: (
           <ProtectedRoute>
             <AdminDashboard />
           </ProtectedRoute>
-        )
+        ),
       },
       {
-        path: '/ai-resume',
+        path: "/ai-resume",
         element: (
           <ProtectedRoute>
             <AIResumeAnalyzer />
           </ProtectedRoute>
-        )
+        ),
       },
-
-    ]
-  }
-
-])
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <RouterProvider router={router} />
-
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

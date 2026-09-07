@@ -8,6 +8,7 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import LoadingState from "../../components/LoadingState";
 
 const RecruiterDashboard = () => {
   const navigate = useNavigate();
@@ -64,7 +65,10 @@ const RecruiterDashboard = () => {
 
   if (loading) {
     return (
-      <div className="text-center mt-20 text-xl font-semibold">Loading...</div>
+      <LoadingState
+        label="Loading recruiter dashboard"
+        description="We are gathering your jobs and application activity."
+      />
     );
   }
 
