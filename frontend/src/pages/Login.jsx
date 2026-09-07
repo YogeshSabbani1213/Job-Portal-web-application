@@ -94,7 +94,7 @@ export default function Login() {
           Login
         </button>
 
-        <GoogleLogin
+        <GoogleLogin className='bg-black text-white w-full py-3 rounded'
           onSuccess={handleGoogleSuccess}
           onError={() => {
             console.log("Google Login Failed")
