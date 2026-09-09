@@ -57,7 +57,7 @@ const AppliedJobs = () => {
         prevJobs.filter((item) => item._id !== applicationId),
       );
     } catch (error) {
-      console.log(error);
+      console.log("error:",error);
 
       toast.error(
         error.response?.data?.message || "Failed to withdraw application",
