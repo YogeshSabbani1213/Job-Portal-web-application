@@ -46,7 +46,7 @@ router.delete(
   "/withdraw/:applicationId",
   verifyToken,
   authorizeroles("job seeker"),
-  withdrawApplication
+  withdrawApplication,
 );
 
 export default router;

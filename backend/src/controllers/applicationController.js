@@ -163,6 +163,7 @@ export const withdrawApplication = async (req, res) => {
   try {
 
     const application = await applicationModel.findById(req.params.applicationId);
+    console.log('appl:',application);
 
     if (!application) {
       return res.status(404).json({
@@ -171,7 +172,7 @@ export const withdrawApplication = async (req, res) => {
       });
     }
 
-    if (application.applicant.toString() !== req.user._id) {
+    if (application.applicant.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: "Unauthorized"
