@@ -1,12 +1,26 @@
 import dotenv from "dotenv";
 import axios from "axios";
+import mongoose from 'mongoose';
+import Document from "./documentModel.js";
 
 dotenv.config();
 
-//This is the text we want to embed.
-const text = "React is a JavaScript library used to build user interfaces.";
+async function connectDB() {
+    await mongoose.connect(process.env.MONGO_URI,{
+        dbName:'rag_learning'
+    });
 
-async function createEmbedding() {
+    console.log("MongoDB connected");
+}
+
+//This is the text we want to embed.
+const chunks = [
+    "React is a JavaScript library used to build user interfaces.",
+    "Node.js is a runtime environment used to execute JavaScript outside the browser.",
+    "MongoDB is a NoSQL database that stores data in flexible documents."
+];
+
+async function createEmbedding(text) {
     try {
 
         const response = await axios.post(
@@ -30,6 +44,7 @@ async function createEmbedding() {
         console.log("Embedding created!");
         console.log("Vector length:", embedding.length);
         console.log("First 10 values:", embedding.slice(0, 10));
+        return embedding;
 
     } catch (error) {
         console.error(
@@ -39,4 +54,29 @@ async function createEmbedding() {
     }
 }
 
-createEmbedding();
+
+async function ingestChunks() {
+
+    for (let i = 0; i < chunks.length; i++) {
+
+        const embedding = await createEmbedding(chunks[i]);
+
+        await Document.create({
+            text: chunks[i],
+            embedding: embedding,
+            documentType: "test",
+            chunkIndex: i
+        });
+
+        console.log(`Chunk ${i} stored`);
+    }
+}
+
+async function main() {
+    await connectDB();
+    await ingestChunks();
+
+    await mongoose.connection.close();
+}
+
+main();
