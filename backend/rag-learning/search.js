@@ -74,11 +74,9 @@ async function generateAnswer(query, context) {
                     },
                     {
                         role: "user",
-                        content: `Context:
-${context}
+                        content: `Context:${context}
 
-Question:
-${query}`
+                        Question:${query}`
                     }
                 ]
             },
@@ -89,11 +87,8 @@ ${query}`
                 }
             }
         );
-
         const answer = response.data.choices[0].message.content;
-
         return answer;
-
     } catch (error) {
         console.error(
             "LLM error:",
@@ -111,18 +106,25 @@ async function connectDB() {
 }
 
 async function main() {
-  await connectDB();
+    await connectDB();
 
-  const queryEmbedding = await createQueryEmbedding(query);
+    const queryEmbedding = await createQueryEmbedding(query);
 
-  console.log("Query embedding ready:", queryEmbedding.length);
+    console.log("Query embedding ready:", queryEmbedding.length);
 
-  const results = await searchDocuments(queryEmbedding);
+    const results = await searchDocuments(queryEmbedding);
 
-  console.log("Search results:");
-  console.dir(results, { depth: null });
+    console.log("Search results:");
+    console.dir(results, { depth: null });
 
-  await mongoose.connection.close();
+    const context = results.map(result => result.text).join("\n");
+
+    const answer = await generateAnswer(query, context);
+
+    console.log("Generated answer:");
+    console.log(answer);
+
+    await mongoose.connection.close();
 }
 
 main();
