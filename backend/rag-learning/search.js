@@ -8,12 +8,79 @@ dotenv.config();
 const query = "What is used to build user interfaces?";
 
 async function createQueryEmbedding(text) {
+  try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/embeddings",
+      {
+        model: "openai/text-embedding-3-small",
+        input: text,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const embedding = response.data.data[0].embedding;
+
+    console.log("Query embedding created!");
+    console.log("Vector length:", embedding.length);
+
+    return embedding;
+  } catch (error) {
+    console.error("Embedding error:", error.response?.data || error.message);
+  }
+}
+
+async function searchDocuments(queryEmbedding) {
+  const results = await Document.aggregate([
+    {
+      $vectorSearch: {
+        index: "vector_index",
+        path: "embedding",
+        queryVector: queryEmbedding,
+        numCandidates: 10,
+        limit: 3,
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        text: 1,
+        documentType: 1,
+        chunkIndex: 1,
+        score: {
+          $meta: "vectorSearchScore",
+        },
+      },
+    },
+  ]);
+
+  return results;
+}
+
+async function generateAnswer(query, context) {
     try {
         const response = await axios.post(
-            "https://openrouter.ai/api/v1/embeddings",
+            "https://openrouter.ai/api/v1/chat/completions",
             {
-                model: "openai/text-embedding-3-small",
-                input: text
+                model: "openai/gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "Answer the question using only the provided context."
+                    },
+                    {
+                        role: "user",
+                        content: `Context:
+${context}
+
+Question:
+${query}`
+                    }
+                ]
             },
             {
                 headers: {
@@ -23,75 +90,39 @@ async function createQueryEmbedding(text) {
             }
         );
 
-        const embedding = response.data.data[0].embedding;
+        const answer = response.data.choices[0].message.content;
 
-        console.log("Query embedding created!");
-        console.log("Vector length:", embedding.length);
-
-        return embedding;
+        return answer;
 
     } catch (error) {
         console.error(
-            "Embedding error:",
+            "LLM error:",
             error.response?.data || error.message
         );
     }
 }
 
-async function searchDocuments(queryEmbedding) {
-    const results = await Document.aggregate([
-        {
-            $vectorSearch: {
-                index: "vector_index",
-                path: "embedding",
-                queryVector: queryEmbedding,
-                numCandidates: 10,
-                limit: 3
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                text: 1,
-                documentType: 1,
-                chunkIndex: 1,
-                score: {
-                    $meta: "vectorSearchScore"
-                }
-            }
-        }
-    ]);
-
-    return results;
-}
-
-async function generateAnswer(query, context) {
-
-}
-
-
-
 async function connectDB() {
-    await mongoose.connect(process.env.MONGO_URI, {
-        dbName: "rag_learning"
-    });
+  await mongoose.connect(process.env.MONGO_URI, {
+    dbName: "rag_learning",
+  });
 
-    console.log("MongoDB connected");
+  console.log("MongoDB connected");
 }
 
 async function main() {
-    await connectDB();
+  await connectDB();
 
-    const queryEmbedding = await createQueryEmbedding(query);
+  const queryEmbedding = await createQueryEmbedding(query);
 
-    console.log("Query embedding ready:", queryEmbedding.length);
+  console.log("Query embedding ready:", queryEmbedding.length);
 
-    const results = await searchDocuments(queryEmbedding);
+  const results = await searchDocuments(queryEmbedding);
 
-    console.log("Search results:");
-    console.dir(results, { depth: null });
+  console.log("Search results:");
+  console.dir(results, { depth: null });
 
-    await mongoose.connection.close();
+  await mongoose.connection.close();
 }
 
 main();
