@@ -65,6 +65,10 @@ async function searchDocuments(queryEmbedding) {
     return results;
 }
 
+async function generateAnswer(query, context) {
+
+}
+
 
 
 async function connectDB() {
