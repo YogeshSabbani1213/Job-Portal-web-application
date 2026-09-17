@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const documentSchema = new mongoose.Schema(
     {
+        //content
         text: {
             type: String,
             required: true
@@ -12,6 +13,7 @@ const documentSchema = new mongoose.Schema(
             required: true
         },
 
+        //Identity / ownership
         documentType: {
             type: String,
             required: true
@@ -25,6 +27,7 @@ const documentSchema = new mongoose.Schema(
             type: String
         },
 
+        //Position
         chunkIndex: {
             type: Number,
             required: true
