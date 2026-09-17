@@ -17,6 +17,14 @@ const documentSchema = new mongoose.Schema(
             required: true
         },
 
+        userId: {
+            type: String
+        },
+
+        jobId: {
+            type: String
+        },
+
         chunkIndex: {
             type: Number,
             required: true
