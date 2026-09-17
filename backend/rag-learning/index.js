@@ -64,18 +64,24 @@ async function ingestChunks() {
         await Document.create({
             text: chunks[i],
             embedding: embedding,
-            documentType: "test",
+            documentType: "resume", //We're pretending these three learning chunks belong to a resume.
+            userId:"user123",
+            jobId:"job456",
             chunkIndex: i
         });
 
         console.log(`Chunk ${i} stored`);
     }
 }
+async function clearDocuments() {
+    await Document.deleteMany({});
+    console.log("Existing documents cleared");
+}
 
 async function main() {
     await connectDB();
+    await clearDocuments();
     await ingestChunks();
-
     await mongoose.connection.close();
 }
 

@@ -43,6 +43,11 @@ async function searchDocuments(queryEmbedding) {
         queryVector: queryEmbedding,
         numCandidates: 10,
         limit: 3,
+        filter: {
+          userId: "user123",
+          jobId: "job456",
+          documentType: "resume",
+        },
       },
     },
     {
@@ -62,39 +67,36 @@ async function searchDocuments(queryEmbedding) {
 }
 
 async function generateAnswer(query, context) {
-    try {
-        const response = await axios.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            {
-                model: "openai/gpt-4o-mini",
-                messages: [
-                    {
-                        role: "system",
-                        content: "Answer the question using only the provided context."
-                    },
-                    {
-                        role: "user",
-                        content: `Context:${context}
+  try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "openai/gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: "Answer the question using only the provided context.",
+          },
+          {
+            role: "user",
+            content: `Context:${context}
 
-                        Question:${query}`
-                    }
-                ]
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                    "Content-Type": "application/json"
-                }
-            }
-        );
-        const answer = response.data.choices[0].message.content;
-        return answer;
-    } catch (error) {
-        console.error(
-            "LLM error:",
-            error.response?.data || error.message
-        );
-    }
+                        Question:${query}`,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const answer = response.data.choices[0].message.content;
+    return answer;
+  } catch (error) {
+    console.error("LLM error:", error.response?.data || error.message);
+  }
 }
 
 async function connectDB() {
@@ -106,25 +108,31 @@ async function connectDB() {
 }
 
 async function main() {
-    await connectDB();
+  await connectDB();
 
-    const queryEmbedding = await createQueryEmbedding(query);
+  const queryEmbedding = await createQueryEmbedding(query);
 
-    console.log("Query embedding ready:", queryEmbedding.length);
+  console.log("Query embedding ready:", queryEmbedding.length);
 
-    const results = await searchDocuments(queryEmbedding);
+  const results = await searchDocuments(queryEmbedding);
 
-    console.log("Search results:");
-    console.dir(results, { depth: null });
+  console.log("Search results:");
+  console.dir(results, { depth: null });
 
-    const context = results.map(result => result.text).join("\n");
-
-    const answer = await generateAnswer(query, context);
-
-    console.log("Generated answer:");
-    console.log(answer);
-
+  if (results.length === 0) {
+    console.log("No relevant documents found.");
     await mongoose.connection.close();
+    return;
+  }
+
+  const context = results.map((result) => result.text).join("\n");
+
+  const answer = await generateAnswer(query, context);
+
+  console.log("Generated answer:");
+  console.log(answer);
+
+  await mongoose.connection.close();
 }
 
 main();
